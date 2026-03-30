@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plantilla Premium | ZonaTecno</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+--primary: #111111;
+--accent: #d4af37; /* Dorado elegante */
+--bg: #f8f9fa;
+--text-dark: #222;
+}
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+    body { background-color: var(--bg); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+
+        .app-container { width: 100%; max-width: 100%; background: white; border-radius: 0; box-shadow: none; overflow-x: hidden; margin: 0; position: relative; min-height: 100vh;}
+    
+    header { background: var(--primary); color: var(--accent); padding: 15px; text-align: center; border-bottom: 3px solid var(--accent); display: flex; justify-content: space-between; align-items: center;}
+    header h2 { margin: 0; flex-grow: 1; text-align: center; }
+    .logout-btn { background: transparent; color: white; border: 1px solid white; padding: 8px 15px; border-radius: 5px; cursor: pointer; display: none; transition: 0.3s; }
+    .logout-btn:hover { background: white; color: black; }
+
+    .view { display: none; padding: 20px 15px; animation: fadeIn 0.4s; }
+
+    .view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Pantalla de Carga */
+    #loading-screen { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: var(--primary); color: white; flex-direction: column; justify-content: center; align-items: center; z-index: 100; text-align: center; padding: 20px; }
+    .spinner { width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s infinite linear; margin-bottom: 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Formularios */
+    .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+    .form-group { flex: 1; margin-bottom: 15px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85em; color: #555; text-transform: uppercase; }
+       input, select, textarea { width: 100%; padding: 14px; border: 1.5px solid #eaeaea; border-radius: 8px; background: #ffffff; outline: none; transition: all 0.3s ease; font-size: 0.95em; color: #333; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+    select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 15px; cursor: pointer; border-color: var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(212, 175, 55, 0.4); background: #fafafa; transform: translateY(-1px); }
+    .view h2 { text-transform: uppercase; letter-spacing: 1px; font-weight: 800; border-bottom: 2px solid var(--accent); padding-bottom: 10px; display: inline-block; }
+
+    
+    .btn { background: var(--primary); color: var(--accent); padding: 16px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 800; text-transform: uppercase; transition: all 0.3s ease; margin-top: 10px; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .btn:hover { background: #222; transform: translateY(-2px); }
+    .btn-green { background: #28a745; color: white; }
+    .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+
+    /* Tabs */
+    .nav-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 10px; overflow-x: auto; white-space: nowrap; }
+    .tab { cursor: pointer; padding: 10px 20px; border-radius: 30px; background: #eee; font-size: 0.9em; font-weight: 600; transition: 0.3s; flex-shrink: 0; }
+    .tab.active { background: var(--accent); color: var(--primary); }
+
+    /* Cuadrícula */
+    .template-header-render { text-align: center; margin-bottom: 15px; }
+    .template-header-render img { max-width: 150px; max-height: 100px; margin-bottom: 10px; border-radius: 10px; }
+    .template-header-render h2 { color: #b71c1c; font-weight: 900; font-size: 2.2em; text-transform: uppercase; }
+    .prize-info { display: flex; justify-content: center; gap: 20px; margin: 10px 0; font-weight: bold; background: #fff3e0; padding: 10px; border-radius: 8px; color: #e65100; }
+    
+              .grid-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #111; border: 2px solid #111; margin-bottom: 20px; }
+    .grid-cell { background: white; padding: 2px; min-height: 25px; display: flex; align-items: center; justify-content: flex-start; font-size: 0.55em; font-weight: bold; cursor: pointer; overflow: hidden; }
+    .grid-cell:hover { background: #f0f0f0; }
+    .cell-num { color: #111; font-weight: 900; margin-right: 3px; font-size: 0.85em; }
+
+    .cell-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-grow: 1; text-align: left; }
+
+    .status-pagado { color: #2e7d32; } /* Verde */
+    .status-apartado { color: #f57c00; } /* Naranja */
+
+    /* Modales */
+    .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); z-index: 200; justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 450px; position: relative; }
+    .close-modal { position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 1.5em; color: #666; }
+
+       /* Boleto Digital (Oculto hasta generar) */
+    #digital-ticket-render { display: none; flex-direction: column; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    /* Esqueletos de Carga Premium */
+    @keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
+    .skeleton { background: #f6f7f8; background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%); background-repeat: no-repeat; background-size: 800px 100px; animation: shimmer 1.5s linear infinite; border-radius: 10px; border: 1px solid #eee; margin-bottom: 15px; }
+    .sk-card { height: 110px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+
+</style>
+
+</head>
+<body>
+<div class="app-container">
+<button id="logoutBtn" style="display: none;"></button>
+<div id="loading-screen" style="display:none;">
+    <div class="spinner"></div>
+    <h2 id="loading-text">Iniciando sistema...</h2>
+</div>
+
+<div id="view-login" class="view">
+
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: var(--primary); font-weight: 800;">Bienvenido a Plantilla Premium</h1>
+        <p style="color: #666; font-size: 0.9em;">Ingresa tus datos de acceso</p>
+    </div>
+    
+    <div class="form-group">
+        <label>Correo Electrónico</label>
+        <input type="email" id="email" placeholder="usuario@correo.com">
+    </div>
+    <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="password" placeholder="••••••••">
+    </div>
+    <button class="btn" id="btnLogin">Ingresar</button>
+    
+    <div style="text-align:center; margin-top:25px; font-size: 0.9em;">
+        <p>¿No tienes cuenta? <a href="#" id="wa-link" target="_blank" style="color: #25D366; font-weight: bold; text-decoration: none;">Realiza tu pago aquí (WhatsApp)</a></p>
+    </div>
+    <p style="text-align:center; margin-top:40px; font-size: 0.8em; color:#999;">Administrado por <strong>ZonaTecno</strong></p>
+</div>
+<div id="view-admin" class="view">
+    <h2 style="margin-bottom: 20px; color: var(--primary);">Mi Panel Profesional</h2>
+    <div class="form-group" style="margin-bottom: 25px;">
+        <label>¿Qué deseas hacer?</label>
+        <select onchange="if(this.value === 'salir') document.getElementById('logoutBtn').click(); else switchAdminTab(this.value);" style="border-color: var(--accent); font-weight: bold;">
+            <option value="clientes">Gestionar Clientes</option>
+            <option value="nuevo">Registrar Nuevo Cliente</option>
+            <option value="ajustes">Ajustes Web Generales</option>
+            <option value="salir" style="color: red;">Cerrar Sesión</option>
+        </select>
+    </div>
+
+    <div id="admin-clientes" style="overflow-x: auto;">
+        <table style="width:100%; border-collapse: collapse; min-width: 600px;">
+            <tr style="background:#eee;">
+                <th style="padding:10px; text-align:left;">Nombre</th>
+                <th style="padding:10px; text-align:left;">Email</th>
+                                <th style="padding:10px; text-align:left;">Estado</th>
+                <th style="padding:10px; text-align:left;">Fecha Alta</th>
+                <th style="padding:10px; text-align:left;">Acción</th>
+
+            </tr>
+            <tbody id="usersList"></tbody>
+        </table>
+    </div>
+
+    <div id="admin-nuevo" style="display:none;">
+        <div class="form-group"><label>Nombre Completo</label><input type="text" id="reg-name"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="reg-email"></div>
+        <div class="form-group"><label>Contraseña</label><input type="password" id="reg-pass"></div>
+        <button class="btn" id="btnRegisterUser">Dar de Alta Cliente</button>
+    </div>
+         <div id="admin-ajustes" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Ajustes Generales del Sistema</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Cambia el número de soporte general (el que aparece en el login y en el panel de usuarios).</p>
+        <div class="form-group">
+            <label>Número de WhatsApp General (Redirección)</label>
+            <input type="text" id="admin-wa-num" placeholder="Ej: 5215551234567">
+        </div>
+        <button class="btn btn-green" onclick="saveAdminSettings()">Guardar Ajustes</button>
+    </div>
+       
+</div>
+<div id="view-user" class="view">
+    <h2 style="margin-bottom: 20px; color: var(--primary);">Mi Panel Profesional</h2>
+    <div class="form-group" style="margin-bottom: 25px;">
+        <label>¿Qué deseas hacer?</label>
+        <select onchange="if(this.value === 'salir') document.getElementById('logoutBtn').click(); else switchUserTab(this.value);" style="border-color: var(--accent); font-weight: bold;">
+            <option value="lista">Ver Mis Plantillas</option>
+            <option value="crear">Publicar Nuevo Sorteo</option>
+            <option value="contactos">Contactar Clientes</option>
+            <option value="loterias">Ver Calendario y Sorteos en Vivo</option>
+                       <option value="perfil">Mi Perfil y WhatsApp de Ventas</option>
+            <option value="proveedor">Contactar a mi Proveedor</option>
+            <option value="salir" style="color: red;">Cerrar Sesión</option>
+        </select>
+
+    </div>
+
+    <div id="user-lista">
+        <div id="myTemplatesList" style="display: grid; grid-template-columns: 1fr; gap: 15px;"></div>
+    </div>
+
+    <div id="user-crear" style="display:none;">
+        <div class="form-row">
+            <div class="form-group"><label>Nombre del Sorteo</label><input type="text" id="t-nombre" placeholder="Ej: Gran Rifa Anual"></div>
+            <div class="form-group"><label>Sorteo #</label><input type="text" id="t-numero" placeholder="Ej: 368"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>En base a</label>
+                <select id="t-base">
+                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Entre amigos</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Boletos (Máx 100)</label><input type="number" id="t-boletos" value="100" max="100"></div>
+        </div>
+                <div class="form-row">
+            <div class="form-group"><label>Cant. de Premios</label><input type="number" id="t-premios-qty" placeholder="Ej: 3"></div>
+            <div class="form-group"><label>Monto/Premio</label><input type="text" id="t-premios-monto" placeholder="Ej: $1000 MXN o Auto"></div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group"><label>Oportunidades por boleto</label><input type="number" id="t-oportunidades" placeholder="Ej: 2 o 3" value="1"></div>
+        </div>
+
+                <div class="form-row">
+            <div class="form-group"><label>Subir Logo (Cloudinary)</label><input type="file" id="t-logo"></div>
+            <div class="form-group"><label>Color del Recuadro</label><input type="color" id="t-color" value="#111111" style="height: 50px; padding: 5px; cursor: pointer;"></div>
+        </div>
+
+        <div class="form-group"><label>Descripción Corta</label><textarea id="t-desc" rows="2" placeholder="Se sortea el 29 de Marzo con $14 pesitos"></textarea></div>
+        
+        <button class="btn btn-green" id="btnSaveTemplate">Publicar Sorteo</button>
+    </div>
+        <div id="user-contactos" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Directorio de Clientes</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Selecciona una plantilla para ver los clientes que han apartado o pagado boletos.</p>
+        <select id="select-plantilla-clientes" style="margin-bottom: 20px;" onchange="loadClientsFromTemplate(this.value)">
+            <option value="">-- Selecciona un sorteo --</option>
+        </select>
+        <div id="lista-clientes-render" style="display: grid; gap: 10px;"></div>
+    </div>
+
+    <div id="user-loterias" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Calendario y Sorteos en Vivo</h3>
+        
+        <div style="background: #fff3e0; padding: 20px; border-radius: 10px; border-left: 5px solid #e65100; margin-bottom: 20px;">
+            <h4 style="color: #e65100; margin-bottom: 5px;">📅 Calendario Lotería Nacional</h4>
+            <p style="font-size: 0.85em; color: #444; margin-bottom: 10px;">Consulta los próximos sorteos oficiales directamente en el portal.</p>
+            <a href="https://www.loterianacional.gob.mx/Billete/CalendarioSorteos" target="_blank" class="btn btn-outline" style="display: block; text-align: center; text-decoration: none; padding: 10px;">Ver Calendario Oficial</a>
+        </div>
+
+        <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; border-left: 5px solid #1565c0;">
+            <h4 style="color: #1565c0; margin-bottom: 5px;">🔴 Sorteos en Vivo</h4>
+            <p style="font-size: 0.85em; color: #444; margin-bottom: 10px;">Sigue la transmisión en vivo desde Facebook Oficial.</p>
+            <a href="https://www.facebook.com/share/1KYMW95WtE/" target="_blank" class="btn btn-outline" style="display: block; text-align: center; text-decoration: none; border-color: #1565c0; color: #1565c0; padding: 10px;">Ver Transmisión en Vivo</a>
+        </div>
+    </div>
+        <div id="user-perfil" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Mi Perfil y Configuración</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Configura tus datos para que aparezcan en tu boleto digital y en los mensajes automáticos.</p>
+        <div class="form-group">
+            <label>Título de Boleto / Mi Marca</label>
+            <input type="text" id="user-marca" placeholder="Ej: Sorteos Martínez (Sustituye a ZonaTecno)">
+        </div>
+               <div class="form-group">
+            <label>Mi WhatsApp de Ventas (Con cód. país Ej: 52)</label>
+            <input type="text" id="user-wa-num" placeholder="Ej: 5215551234567">
+        </div>
+
+        <div class="form-group">
+            <label>Página de Facebook o Link (Opcional)</label>
+            <input type="text" id="user-fb" placeholder="Link de tu grupo o perfil">
+        </div>
+        <div class="form-group">
+            <label>Mensaje Predeterminado (Etiquetas: [NUMERO], [CLIENTE], [SORTEO])</label>
+            <textarea id="user-msg" rows="3" placeholder="¡Felicidades [CLIENTE]! Tu boleto [NUMERO] para [SORTEO] está confirmado. Descarga tu boleto aquí."></textarea>
+        </div>
+        <button class="btn" onclick="saveUserProfile()">Guardar Mi Configuración</button>
+    </div>
+
+    <div id="user-proveedor" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Contactar a Soporte / Proveedor</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 20px;">¿Tienes algún problema con tu panel, ocupas más funciones o deseas renovar tu servicio? Manda un mensaje a la administración.</p>
+        <div style="background: #e8f5e9; padding: 25px; border-radius: 12px; border-left: 5px solid #2e7d32; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <h4 style="color: #2e7d32; margin-bottom: 10px;">Chat Directo con Administración</h4>
+            <a href="#" id="wa-admin-link" target="_blank" class="btn btn-green" style="display: inline-block; text-decoration: none; padding: 12px 25px; font-size: 0.9em;"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:18px; vertical-align:middle; margin-right:8px; filter: brightness(0) invert(1);">Enviar Mensaje al Administrador</a>
+        </div>
+    </div>
+
+</div>
+
+<div id="view-grid" class="view">
+    <button class="btn btn-outline" style="width: auto; padding: 5px 15px; margin-bottom: 15px;" onclick="showView('view-user')">← Volver a Mis Plantillas</button>
+                           <div id="capture-area" style="background: white; padding: 15px; border-radius: 0px; display: block; width: 100%; min-width: 350px; margin: 0 auto; position: relative;">
+                    <div id="watermark-container" style="position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); opacity: 0.15; pointer-events: none; z-index: 10; text-align: center; width: 90%;">
+                        <img id="render-watermark" src="" style="display:none; width: 100%; max-height: 250px; object-fit: contain; margin-bottom: 5px;">
+                        <h1 id="render-watermark-base" style="font-size: 2.2em; color: #111; text-transform: uppercase; font-weight: 900; margin: 0; text-shadow: 2px 2px 4px rgba(255,255,255,0.8);"></h1>
+                    </div>
+                <div class="template-header-render" style="position: relative; text-align: center; margin-bottom: 5px; min-height: 60px; z-index: 2;">
+
+                       
+            <img id="render-logo" src="" style="display:none; position: absolute; top: 0; right: 0; width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 2px solid var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="padding-right: 55px; color: #b71c1c; font-weight: 900; font-size: 1.4em; text-transform: uppercase; margin-bottom: 5px;"><span id="render-nombre"></span> #<span id="render-num"></span></h2>
+            <div class="prize-info" style="padding: 5px; margin: 5px 0; font-size: 0.85em;">
+                <span>🏆 Premios: <span id="render-pqty"></span></span>
+                <span>💰 Gana: <span id="render-pmonto"></span></span>
+            </div>
+            <p id="render-desc" style="font-size: 0.9em; color: #444; font-weight: 600; margin-top: 5px;"></p>
+            <p style="font-size: 0.75em; color: #666; margin-top: 2px;">En base a: <strong style="color: var(--primary); text-transform: uppercase;"><span id="render-base"></span></strong></p>
+        </div>
+
+        <div class="grid-container" id="ticket-grid"></div>
+    </div>
+
+        <button class="btn btn-green" style="margin-top: 20px;" onclick="takeGridScreenshot()">📸 Descarga Plantilla</button>
+
+        <button class="btn btn-outline" style="margin-top: 10px;" onclick="copyAvailableNumbers()">📋 Copiar Números Disponibles</button>
+
+</div>
+
+</div>
+<div class="modal-overlay" id="modal-ticket">
+<div class="modal-content">
+<span class="close-modal" onclick="closeModal('modal-ticket')">&times;</span>
+<h3 style="margin-bottom: 20px; color: var(--primary);">Asignar Boleto <span id="m-ticket-num" style="color:var(--accent)"></span></h3>
+    <div class="form-group"><label>Nombre del Cliente</label><input type="text" id="m-nombre"></div>
+        <div class="form-group"><label>WhatsApp (Opcional, incluye cód. país Ej: 52)</label><input type="text" id="m-whatsapp" placeholder="Ej: 5215551234567"></div>
+
+    <div class="form-group"><label>Estatus</label>
+        <select id="m-estatus">
+            <option value="apartado">Apartado</option>
+            <option value="pagado">Pagado</option>
+        </select>
+    </div>
+    
+    <button class="btn" onclick="saveTicketData()">Guardar Datos</button>
+    <button class="btn btn-outline" style="border-color: #007bff; color: #007bff;" onclick="generateDigitalTicket()">Generar Boleto Digital</button>
+</div>
+
+</div>
+<div class="modal-overlay" id="modal-digital">
+<div class="modal-content" style="background: transparent; box-shadow: none; max-height: 90vh; overflow-y: auto; padding: 10px;">
+<span class="close-modal" style="color:white; right: 15px; top: 0px; font-size: 2em; z-index: 10;" onclick="closeModal('modal-digital')">&times;</span>
+    <div id="digital-ticket-render">
+        </div>
+    <button class="btn btn-green" style="margin-top: 15px;" onclick="takeDigitalScreenshot()">Descargar Boleto 📸</button>
+    <button class="btn btn-outline" style="border-color: white; color: white; margin-top: 10px;" onclick="closeModal('modal-digital')">❌ Cerrar Vista</button>
+</div>
+
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, set, push, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+const firebaseConfig = {
+    apiKey: "AIzaSyANQfUTAwiaZ6rw61MTM6dw9HuBz9M_iho",
+    authDomain: "platilla.firebaseapp.com",
+    databaseURL: "https://platilla-default-rtdb.firebaseio.com",
+    projectId: "platilla",
+    storageBucket: "platilla.firebasestorage.app",
+    messagingSenderId: "742156105755",
+    appId: "1:742156105755:web:571a39e6b5061468dea0be"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const ADMIN_EMAIL = "zonatecno@admin.com";
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dcg9ihpvr/image/upload";
+const UPLOAD_PRESET = "ml_default"; 
+
+let currentTemplateId = null;
+let currentTicketNum = null;
+
+// --- MANEJO DE VISTAS ---
+window.showView = (id) => {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+};
+
+window.switchAdminTab = (tab) => {
+    document.getElementById('admin-clientes').style.display = (tab === 'clientes') ? 'block' : 'none';
+    document.getElementById('admin-nuevo').style.display = (tab === 'nuevo') ? 'block' : 'none';
+    document.getElementById('admin-ajustes').style.display = (tab === 'ajustes') ? 'block' : 'none';
+};
+window.switchUserTab = async (tab) => {
+    document.getElementById('user-lista').style.display = (tab === 'lista') ? 'block' : 'none';
+    document.getElementById('user-crear').style.display = (tab === 'crear') ? 'block' : 'none';
+    document.getElementById('user-contactos').style.display = (tab === 'contactos') ? 'block' : 'none';
+    document.getElementById('user-loterias').style.display = (tab === 'loterias') ? 'block' : 'none';
+    document.getElementById('user-perfil').style.display = (tab === 'perfil') ? 'block' : 'none';
+    document.getElementById('user-proveedor').style.display = (tab === 'proveedor') ? 'block' : 'none';
+
+    if(tab === 'perfil') {
+        const snap = await get(ref(db, `users/${auth.currentUser.uid}/perfil`));
+        const p = snap.val();
+        if(p) {
+            document.getElementById('user-marca').value = p.marca || '';
+            document.getElementById('user-wa-num').value = p.wa || '';
+            document.getElementById('user-fb').value = p.fb || '';
+            document.getElementById('user-msg').value = p.msg || '';
+        }
+    }
+};
+
+window.saveUserProfile = async () => {
+    const data = {
+        marca: document.getElementById('user-marca').value,
+        wa: document.getElementById('user-wa-num').value,
+        fb: document.getElementById('user-fb').value,
+        msg: document.getElementById('user-msg').value
+    };
+    await update(ref(db, `users/${auth.currentUser.uid}`), { perfil: data });
+    Swal.fire({ title: '¡Guardado!', text: 'Tu perfil y configuración de boletos se han actualizado.', icon: 'success', confirmButtonColor: '#d4af37' });
+};
+
+
+// Cerrar Modales
+window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; };
+// --- CARGAR WHATSAPP AL INICIO ---
+onValue(ref(db, 'settings/whatsapp'), (snapshot) => {
+    if(snapshot.exists()) {
+        const waNum = snapshot.val();
+        document.getElementById('wa-link').href = `https://wa.me/${waNum}`;
+        const waAdminBtn = document.getElementById('wa-admin-link');
+        if (waAdminBtn) waAdminBtn.href = `https://wa.me/${waNum}`;
+        if (document.getElementById('admin-wa-num')) {
+            document.getElementById('admin-wa-num').value = waNum;
+        }
+    }
+});
+
+// --- AUTENTICACIÓN Y CARGA ELEGÁNTE ---
+document.getElementById('btnLogin').onclick = () => {
+    const email = document.getElementById('email').value.trim();
+    const pass = document.getElementById('password').value;
+    if(!email || !pass) return Swal.fire({ title: 'Faltan datos', text: 'Por favor, llena tu correo y contraseña.', icon: 'warning', confirmButtonColor: '#d4af37' });
+    signInWithEmailAndPassword(auth, email, pass).catch(err => Swal.fire({ title: 'Acceso Denegado', text: 'Correo o contraseña incorrectos.', icon: 'error', confirmButtonColor: '#111111' }));
+};
+
+document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        // Mostrar Pantalla de Carga
+        const loadScreen = document.getElementById('loading-screen');
+        const loadText = document.getElementById('loading-text');
+        loadScreen.style.display = 'flex';
+
+        if (user.email === ADMIN_EMAIL) {
+            // Forzar lectura de configuraciones por si hubo rechazo de permisos antes de iniciar sesión
+            get(ref(db, 'settings/whatsapp')).then((snapshot) => {
+                if(snapshot.exists()) {
+                    if (document.getElementById('admin-wa-num')) {
+                        document.getElementById('admin-wa-num').value = snapshot.val();
+                    }
+                }
+            });
+
+            loadText.innerHTML = "Bienvenido Administrador<br><span style='font-size:0.5em'>Gracias por ser parte de ZonaTecno</span>";
+            setTimeout(() => { 
+                loadScreen.style.display = 'none'; 
+                showView('view-admin'); 
+                loadUsers(); 
+            }, 2000);
+        } else {
+                  
+            // Leer datos del cliente
+            const snap = await get(ref(db, 'users/' + user.uid));
+            const data = snap.val();
+            
+            let isBlocked = false;
+            if (data) {
+                if (data.status === 'blocked') {
+                    isBlocked = true;
+                }
+            }
+
+            if (isBlocked) {
+                signOut(auth);
+                loadScreen.style.display = 'none';
+                Swal.fire({ title: 'Cuenta Suspendida', text: 'Tu cuenta ha sido bloqueada. Por favor, contacta a soporte de ZonaTecno.', icon: 'error', confirmButtonColor: '#111111' });
+            } else {
+                const nombreUsr = data ? data.name : "Cliente";
+                loadText.innerHTML = `Bienvenido ${nombreUsr}<br><span style='font-size:0.5em'>Gracias por ser parte de ZonaTecno</span>`;
+                setTimeout(() => { 
+                    loadScreen.style.display = 'none'; 
+                    showView('view-user'); 
+                    loadMyTemplates(user.uid); 
+                }, 2500);
+            }
+        }
+    } else {
+        document.getElementById('loading-screen').style.display = 'none';
+        showView('view-login');
+    }
+});
+
+document.getElementById('btnRegisterUser').onclick = async () => {
+    const name = document.getElementById('reg-name').value;
+    const email = document.getElementById('reg-email').value;
+    const pass = document.getElementById('reg-pass').value;
+    if(!name || !email || !pass) return;
+
+    try {
+        const secondaryApp = initializeApp(firebaseConfig, "App" + Date.now());
+        const secondaryAuth = getAuth(secondaryApp);
+        const res = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+
+                await set(ref(db, 'users/' + res.user.uid), { name, email, status: 'active', fechaAlta: new Date().toLocaleDateString('es-MX') });
+
+        await signOut(secondaryAuth);
+        
+        Swal.fire({ title: '¡Éxito!', text: 'Cliente registrado correctamente.', icon: 'success', confirmButtonColor: '#d4af37' });
+        
+        document.getElementById('reg-name').value = '';
+        document.getElementById('reg-email').value = '';
+        document.getElementById('reg-pass').value = '';
+        switchAdminTab('clientes');
+    } catch (e) { 
+        let errorMsg = 'Ocurrió un error al registrar.';
+
+        if (e.code === 'auth/email-already-in-use') errorMsg = 'El correo ya está registrado en el sistema. Intenta con otro.';
+        if (e.code === 'auth/weak-password') errorMsg = 'La contraseña es muy corta. Usa al menos 6 caracteres.';
+        if (e.code === 'auth/invalid-email') errorMsg = 'El formato del correo electrónico no es válido.';
+        Swal.fire({ title: 'No se pudo registrar', text: errorMsg, icon: 'error', confirmButtonColor: '#111111' }); 
+    }
+};
+
+function loadUsers() {
+    onValue(ref(db, 'users'), (snapshot) => {
+        const list = document.getElementById('usersList');
+        list.innerHTML = '';
+        snapshot.forEach(child => {
+            const u = child.val();
+            const btnColor = u.status === 'active' ? 'red' : 'green';
+            const btnText = u.status === 'active' ? 'Bloquear' : 'Desbloquear';
+            list.innerHTML += `
+                <tr>
+                    <td style="padding:10px; border-bottom:1px solid #ddd;">${u.name}</td>
+                    <td style="padding:10px; border-bottom:1px solid #ddd;">${u.email}</td>
+                                        <td style="padding:10px; border-bottom:1px solid #ddd; text-transform: uppercase; font-weight: bold; font-size: 0.8em;">${u.status}</td>
+                    <td style="padding:10px; border-bottom:1px solid #ddd; font-size: 0.85em; color: #666;">${u.fechaAlta || 'N/A'}</td>
+                    <td style="padding:10px; border-bottom:1px solid #ddd; white-space: nowrap;">
+
+                        <button class="btn" style="background:${btnColor}; padding:5px 10px; margin:0; width:auto; font-size:0.85em;" onclick="toggleUserStatus('${child.key}', '${u.status}')">${btnText}</button>
+                        <button class="btn" style="background:#b71c1c; padding:5px 10px; margin-top:5px; width:auto; font-size:0.85em;" onclick="deleteUser('${child.key}')">Eliminar</button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
+
+window.toggleUserStatus = (id, currentStatus) => {
+    update(ref(db, 'users/' + id), { status: currentStatus === 'active' ? 'blocked' : 'active' });
+};
+
+window.deleteUser = (id) => {
+    Swal.fire({
+        title: '¿Estás seguro?', text: "Se eliminará permanentemente al cliente.", icon: 'warning',
+        showCancelButton: true, confirmButtonColor: '#b71c1c', cancelButtonColor: '#555', confirmButtonText: 'Sí, eliminar'
+    }).then((result) => {
+        if (result.isConfirmed) { set(ref(db, 'users/' + id), null); }
+    });
+};
+window.saveAdminSettings = async () => {
+    const wa = document.getElementById('admin-wa-num').value;
+    await set(ref(db, 'settings/whatsapp'), wa);
+    Swal.fire('¡Ajustes Guardados!', 'El WhatsApp principal del sistema ha sido actualizado.', 'success');
+};
+
+// --- USUARIO: CREAR PLANTILLA ---
+document.getElementById('btnSaveTemplate').onclick = async () => {
+    const btn = document.getElementById('btnSaveTemplate');
+    btn.innerText = "Subiendo imagen y publicando..."; btn.disabled = true;
+
+    const file = document.getElementById('t-logo').files[0];
+    let imgUrl = "";
+
+    if(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET);
+        formData.append('folder', 'Plantillas');
+        const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+        const json = await resp.json();
+        imgUrl = json.secure_url;
+    }
+
+                const newTpl = {
+        nombre: document.getElementById('t-nombre').value,
+        numero: document.getElementById('t-numero').value,
+        base: document.getElementById('t-base').value,
+        boletos: parseInt(document.getElementById('t-boletos').value) || 100,
+        premiosQty: document.getElementById('t-premios-qty').value,
+        premiosMonto: document.getElementById('t-premios-monto').value,
+        oportunidades: parseInt(document.getElementById('t-oportunidades').value) || 1,
+        desc: document.getElementById('t-desc').value,
+        color: document.getElementById('t-color').value || '#111111',
+        logo: imgUrl,
+        fecha: new Date().toLocaleDateString('es-MX'),
+        tickets: {} 
+    };
+
+
+    const tplRef = push(ref(db, 'templates/' + auth.currentUser.uid));
+    await set(tplRef, newTpl);
+    
+    btn.innerText = "Publicar Sorteo"; btn.disabled = false;
+    Swal.fire({ title: '¡Sorteo Publicado!', text: 'Tu plantilla se ha generado y guardado exitosamente.', icon: 'success', confirmButtonColor: '#d4af37' });
+    switchUserTab('lista');
+};
+
+ // --- USUARIO: LISTAR PLANTILLAS ---
+function loadMyTemplates(uid) {
+    const div = document.getElementById('myTemplatesList');
+    // Inyectar el esqueleto de carga elegante al instante
+    div.innerHTML = '<div class="skeleton sk-card"></div><div class="skeleton sk-card"></div>';
+
+    onValue(ref(db, 'templates/' + uid), (snapshot) => {
+        const selectClientes = document.getElementById('select-plantilla-clientes');
+        
+        div.innerHTML = '';
+        if(selectClientes) selectClientes.innerHTML = '<option value="">-- Selecciona un sorteo --</option>';
+
+        snapshot.forEach(child => {
+            const t = child.val();
+                 // Llenar lista principal
+            div.innerHTML += `
+                <div style="background: white; border:1px solid #eee; padding:20px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 10px;">
+                    <div>
+                        <h3 style="color:var(--primary); margin-bottom:5px;">${t.nombre} #${t.numero}</h3>
+                        <p style="font-size:0.85em; color:#666;">${t.boletos} boletos | Base: ${t.base}</p>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn" style="width:auto; padding:10px 15px; margin-top:0;" onclick="openGrid('${child.key}')">Gestionar</button>
+                        <button class="btn" style="width:auto; padding:10px 15px; background:#b71c1c; color:white; margin-top:0;" onclick="deleteTemplate('${child.key}')">Eliminar</button>
+                    </div>
+                </div>
+            `;
+            
+            // Llenar el menú desplegable de clientes
+            if(selectClientes) {
+                selectClientes.innerHTML += `<option value="${child.key}">${t.nombre} #${t.numero}</option>`;
+            }
+        });
+    });
+}
+window.deleteTemplate = (templateId) => {
+    Swal.fire({
+        title: '¿Eliminar Sorteo?', text: "Se borrará permanentemente junto con sus boletos.", icon: 'warning',
+        showCancelButton: true, confirmButtonColor: '#b71c1c', cancelButtonColor: '#555', confirmButtonText: 'Sí, eliminar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            set(ref(db, `templates/${auth.currentUser.uid}/${templateId}`), null);
+            Swal.fire('¡Eliminado!', 'El sorteo ha sido borrado.', 'success');
+        }
+    });
+};
+
+// --- USUARIO: RENDERIZAR CUADRICULA ---
+window.openGrid = async (templateId) => {
+    currentTemplateId = templateId;
+    const snap = await get(ref(db, `templates/${auth.currentUser.uid}/${templateId}`));
+    const t = snap.val();
+
+    document.getElementById('render-nombre').innerText = t.nombre;
+    document.getElementById('render-num').innerText = t.numero;
+    document.getElementById('render-pqty').innerText = t.premiosQty;
+    document.getElementById('render-pmonto').innerText = t.premiosMonto;
+    document.getElementById('render-desc').innerText = t.desc;
+    document.getElementById('render-base').innerText = t.base;
+    
+       const logoImg = document.getElementById('render-logo');
+    const bgWatermark = document.getElementById('render-watermark');
+    document.getElementById('render-watermark-base').innerText = t.base || '';
+    if(t.logo) { 
+        logoImg.src = t.logo; logoImg.style.display = 'inline-block'; 
+        bgWatermark.src = t.logo; bgWatermark.style.display = 'inline-block';
+    } else { 
+        logoImg.style.display = 'none'; 
+        bgWatermark.style.display = 'none';
+    }
+
+    const gridCont = document.getElementById('ticket-grid');
+    gridCont.style.backgroundColor = t.color || '#111111';
+    gridCont.style.borderColor = t.color || '#111111';
+
+        renderGridCells(t.boletos, t.tickets || {}, t.oportunidades);
+
+    showView('view-grid');
+
+    // Escuchar cambios en vivo de los tickets
+    onValue(ref(db, `templates/${auth.currentUser.uid}/${templateId}/tickets`), (tsnap) => {
+        renderGridCells(t.boletos, tsnap.val() || {}, t.oportunidades);
+    });
+};
+
+function renderGridCells(total, ticketsData, oportunidades = 1) {
+    const grid = document.getElementById('ticket-grid');
+    grid.innerHTML = '';
+    
+    let celdasReales = oportunidades > 1 ? Math.ceil(total / oportunidades) : total;
+
+    for (let i = 1; i <= celdasReales; i++) {
+        let numStr = i < 100 ? i.toString().padStart(2, '0') : '00';
+        if(i === 100) numStr = '00';
+
+        const td = ticketsData[numStr];
+        let nameHTML = '';
+        let colorClass = '';
+
+        if (td) {
+            nameHTML = td.nombre;
+            colorClass = td.estatus === 'pagado' ? 'status-pagado' : 'status-apartado';
+        }
+
+               let displayNums = `<span class="cell-num">${numStr}</span>`;
+        if(oportunidades > 1) {
+            displayNums = `<div style="display:flex; flex-direction:column; font-size:0.9em; color:#111; font-weight:900; margin-right:4px; border-right:1px solid #ccc; padding-right:4px; line-height:1;">`;
+            displayNums += `<span>${numStr}</span>`;
+            for(let k=1; k<oportunidades; k++) {
+                let extraNum = i + (k * celdasReales);
+                let extraStr = extraNum < 100 ? extraNum.toString().padStart(2, '0') : '00';
+                if(extraNum === 100) extraStr = '00';
+                displayNums += `<span>${extraStr}</span>`;
+            }
+            displayNums += `</div>`;
+        }
+
+        const cell = document.createElement('div');
+        cell.className = 'grid-cell';
+        
+        cell.innerHTML = `
+            ${displayNums}
+            <span class="cell-name ${colorClass}" style="line-height: 1.1;">${nameHTML}</span>
+        `;
+
+        cell.onclick = () => openTicketModal(numStr, td);
+        grid.appendChild(cell);
+    }
+}
+
+// --- USUARIO: GESTION BOLETOS Y SCREENSHOTS ---
+window.openTicketModal = (num, data) => {
+    currentTicketNum = num;
+    document.getElementById('m-ticket-num').innerText = num;
+    document.getElementById('m-nombre').value = data ? data.nombre : '';
+    document.getElementById('m-whatsapp').value = data ? (data.whatsapp || '') : '';
+    document.getElementById('m-estatus').value = data ? data.estatus : 'apartado';
+    
+    document.getElementById('modal-ticket').style.display = 'flex';
+};
+
+window.saveTicketData = async () => {
+    const nombre = document.getElementById('m-nombre').value;
+    const estatus = document.getElementById('m-estatus').value;
+    const sorteoNombre = document.getElementById('render-nombre').innerText;
+    
+    if(!nombre) { 
+        set(ref(db, `templates/${auth.currentUser.uid}/${currentTemplateId}/tickets/${currentTicketNum}`), null);
+        closeModal('modal-ticket');
+        return;
+    } 
+
+    const ticketData = {
+        nombre: nombre,
+        whatsapp: document.getElementById('m-whatsapp').value,
+        estatus: estatus
+    };
+    
+    await set(ref(db, `templates/${auth.currentUser.uid}/${currentTemplateId}/tickets/${currentTicketNum}`), ticketData);
+    closeModal('modal-ticket');
+
+                      // Obtener Perfil Completo del usuario para las variables
+    const snapPerfil = await get(ref(db, `users/${auth.currentUser.uid}/perfil`));
+    const perfil = snapPerfil.val() || {};
+    const waVendedor = perfil.wa || "TU_NUMERO";
+    const fbEnlace = perfil.fb || "Tu página de Facebook";
+    
+    // Obtener plantilla completa para calcular oportunidades y agrupar
+    const snapT = await get(ref(db, `templates/${auth.currentUser.uid}/${currentTemplateId}`));
+    const tData = snapT.val() || {};
+    const allTickets = tData.tickets || {};
+    const total = tData.boletos || 100;
+    const oportunidades = tData.oportunidades || 1;
+    let celdasReales = oportunidades > 1 ? Math.ceil(total / oportunidades) : total;
+
+    let todosMisNumeros = [];
+    for (const [n, d] of Object.entries(allTickets)) {
+        if (d.nombre && d.nombre.toLowerCase().trim() === nombre.toLowerCase().trim()) {
+            let baseNum = parseInt(n, 10);
+            let bStr = baseNum < 100 ? baseNum.toString().padStart(2, '0') : '00';
+            if (baseNum === 100) bStr = '00';
+            todosMisNumeros.push(bStr);
+            
+            for(let k=1; k<oportunidades; k++) {
+                let extraNum = baseNum + (k * celdasReales);
+                let extraStr = extraNum < 100 ? extraNum.toString().padStart(2, '0') : '00';
+                if(extraNum === 100) extraStr = '00';
+                todosMisNumeros.push(extraStr);
+            }
+        }
+    }
+    const numerosStr = [...new Set(todosMisNumeros)].sort().join(', ');
+
+    let msj = perfil.msg || `🎉 ¡Felicidades [CLIENTE]! 🎉\nTu boleto número *[NUMERO]* para el sorteo *[SORTEO]* ha sido confirmado.`;
+    
+        // Convertir etiquetas
+    msj = msj.replace(/\[CLIENTE\]/g, nombre).replace(/\[NUMERO\]/g, numerosStr).replace(/\[SORTEO\]/g, sorteoNombre);
+    msj += `\n\nEstatus: *${estatus.toUpperCase()}*\n👉 *Compra más boletos:* https://wa.me/${waVendedor}\n📲 *Síguenos en FB:* ${fbEnlace}\n\n🎟️ *Descarga tu boleto digital aquí:* ${window.location.href}`;
+
+    navigator.clipboard.writeText(msj).then(() => {
+
+        Swal.fire({
+            title: '¡Éxito!',
+            html: `<p style="font-size:0.9em; margin-bottom: 20px;">Boleto guardado. El mensaje fue copiado al portapapeles.</p>
+                   <button onclick="navigator.clipboard.writeText(decodeURIComponent('${encodeURIComponent(msj)}')); Swal.fire('¡Copiado!', 'Mensaje copiado al portapapeles', 'success');" style="background:#25D366; color:white; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:800; font-size:1.1em; box-shadow: 0 4px 10px rgba(37,211,102,0.3); width:100%; margin-bottom:15px;">💬 Copiar mensaje de felicitaciones</button>
+                   <button onclick="generateDigitalTicket(); Swal.close();" style="background:#007bff; color:white; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:800; font-size:1.1em; box-shadow: 0 4px 10px rgba(0,123,255,0.3); width:100%;">📥 Descarga el boleto digital para tu cliente</button>`,
+            icon: 'success',
+            showConfirmButton: true,
+            confirmButtonText: 'Cerrar',
+            confirmButtonColor: '#111'
+        });
+    });
+
+};
+
+window.generateDigitalTicket = async () => {
+    const nombre = document.getElementById('m-nombre').value;
+    const estatus = document.getElementById('m-estatus').value;
+    const nombreSorteo = document.getElementById('render-nombre').innerText;
+    
+    if(!nombre) return Swal.fire({ title: 'Faltan datos', text: 'Primero ingresa el nombre del cliente y dale a "Guardar Datos".', icon: 'warning', confirmButtonColor: '#d4af37' });
+
+    // Descargar datos completos de la plantilla para el boleto
+    const snap = await get(ref(db, `templates/${auth.currentUser.uid}/${currentTemplateId}`));
+    const t = snap.val();
+
+    const dtRender = document.getElementById('digital-ticket-render');
+    dtRender.style.display = 'flex';
+    dtRender.style.background = 'white';
+
+       const snapPerfil = await get(ref(db, `users/${auth.currentUser.uid}/perfil`));
+    const perfil = snapPerfil.val() || {};
+    const marca = perfil.marca || "ZONATECNO PREMIA";
+    const logoHtml = t.logo ? `<img src="${t.logo}" style="width: 55px; height: 55px; object-fit: contain; position: absolute; top: 15px; right: 15px; background: white; border-radius: 8px;">` : '';
+    const oportunidades = t.oportunidades || 1;
+    const fecha = t.fecha || new Date().toLocaleDateString('es-MX');
+    const colorEstatus = estatus === 'pagado' ? '#2e7d32' : '#f57c00';
+    
+    
+    const totalBoletos = t.boletos || 100;
+    let celdasReales = oportunidades > 1 ? Math.ceil(totalBoletos / oportunidades) : totalBoletos;
+    
+    let todosMisNumeros = [];
+    if(t.tickets) {
+        for (const [n, d] of Object.entries(t.tickets)) {
+            if (d.nombre && d.nombre.toLowerCase().trim() === nombre.toLowerCase().trim()) {
+                let baseNum = parseInt(n, 10);
+                let bStr = baseNum < 100 ? baseNum.toString().padStart(2, '0') : '00';
+                if (baseNum === 100) bStr = '00';
+                todosMisNumeros.push(bStr);
+                
+                for(let k=1; k<oportunidades; k++) {
+                    let extraNum = baseNum + (k * celdasReales);
+                    let extraStr = extraNum < 100 ? extraNum.toString().padStart(2, '0') : '00';
+                    if(extraNum === 100) extraStr = '00';
+                    todosMisNumeros.push(extraStr);
+                }
+            }
+        }
+    }
+    const numerosStr = todosMisNumeros.length > 0 ? [...new Set(todosMisNumeros)].sort().join(', ') : currentTicketNum;
+
+    dtRender.innerHTML = `
+        <div style="background: #111; color: white; text-align: left; padding: 20px 15px; position: relative;">
+            ${t.logo ? `<img src="${t.logo}" style="width: 45px; height: 45px; object-fit: contain; position: absolute; top: 15px; right: 15px; background: white; border-radius: 8px;">` : ''}
+            <h4 style="color:var(--accent); font-size: 0.8em; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 5px;">${marca}</h4>
+            <h2 style="font-size: 1.5em; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; width: 80%; line-height: 1.1;">${nombreSorteo}</h2>
+            <p style="font-size: 0.85em; color: #ccc;">En base a: <strong style="color: white; text-transform: uppercase;">${t.base}</strong></p>
+        </div>
+        
+        <div style="height: 20px; background: white; position: relative; display: flex; align-items: center; justify-content: center;">
+            <div style="position: absolute; left: -10px; width: 20px; height: 20px; background: #111; border-radius: 50%;"></div>
+            <div style="border-top: 2px dashed #ddd; width: 90%;"></div>
+            <div style="position: absolute; right: -10px; width: 20px; height: 20px; background: #111; border-radius: 50%;"></div>
+        </div>
+
+        <div style="padding: 15px 15px 25px 15px; text-align: center; background: white; position: relative; overflow: hidden;">
+            
+            <div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); opacity: 0.08; pointer-events: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                ${t.logo ? `<img src="${t.logo}" style="width: 120px; height: 120px; object-fit: contain; margin-bottom: 10px; filter: grayscale(100%);">` : ''}
+                <h1 style="font-size: 2.5em; color: #000; text-transform: uppercase; font-weight: 900; margin: 0; line-height: 1; width: 120%; word-wrap: break-word;">${t.base || ''}</h1>
+            </div>
+            
+            <div style="position: relative; z-index: 2;">
+                <p style="font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85em; margin-bottom: 5px;">BOLETO ASIGNADO</p>
+                <h1 style="font-size: ${numerosStr.length > 8 ? '2.5em' : '4em'}; font-weight: 900; color: #111; line-height: 1; margin: 0 0 10px 0; word-break: break-word;">${numerosStr}</h1>
+                <p style="font-size: 1.1em; color: #444; margin-bottom: 20px;">A nombre de: <strong style="color: #111; text-transform: uppercase; font-weight: 900;">${nombre}</strong></p>
+                
+                <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #eaeaea; margin-bottom: 20px;">
+                    <strong style="color: #111; font-size: 0.9em;">Fecha de compra:</strong> <span style="font-size: 0.85em; color: #555;">${fecha}</span>
+                </div>
+                
+                <div style="background: ${colorEstatus}; color: white; padding: 15px; border-radius: 10px; font-weight: 900; font-size: 1.2em; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    ESTATUS: ${estatus}
+                </div>
+                <p style="font-size: 0.75em; color: #999; margin-top: 15px;">Boleto verificado digitalmente • ¡Mucha Suerte!</p>
+            </div>
+        </div>
+    `;
+
+ document.getElementById('modal-ticket').style.display = 'none';
+    document.getElementById('modal-digital').style.display = 'flex';
+};
+
+// Funciones de html2canvas
+window.takeDigitalScreenshot = () => {
+    const element = document.getElementById('digital-ticket-render');
+    html2canvas(element, { backgroundColor: '#111' }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Boleto_${currentTicketNum}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+        closeModal('modal-digital');
+    });
+};
+
+window.takeGridScreenshot = () => {
+    const element = document.getElementById('capture-area');
+    html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Sorteo_Cuadricula.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+        Swal.fire('¡Plantilla Descargada!', 'Revisa tu galería de fotos. La imagen cuadrada ya está lista para publicarse en redes.', 'success');
+    });
+};
+
+// --- NUEVAS FUNCIONES DE VENTAS ---
+window.loadClientsFromTemplate = async (templateId) => {
+    const list = document.getElementById('lista-clientes-render');
+    if(!templateId) return list.innerHTML = '';
+    
+    // Mostrar esqueletos de carga profesionales
+    list.innerHTML = '<div class="skeleton sk-card" style="height: 80px;"></div><div class="skeleton sk-card" style="height: 80px;"></div><div class="skeleton sk-card" style="height: 80px;"></div>';
+    
+    const snap = await get(ref(db, `templates/${auth.currentUser.uid}/${templateId}/tickets`));
+
+    const tickets = snap.val();
+    
+    if(!tickets) return list.innerHTML = '<p style="text-align:center; color:#666; padding: 20px;">Aún no hay boletos apartados ni pagados en este sorteo.</p>';
+    
+    list.innerHTML = '';
+    for (const [num, data] of Object.entries(tickets)) {
+        const isPagado = data.estatus === 'pagado';
+        const statusColor = isPagado ? '#2e7d32' : '#f57c00';
+        const waLink = data.whatsapp ? `<a href="https://wa.me/${data.whatsapp}" target="_blank" class="btn btn-outline" style="padding: 5px 10px; border-color:#25D366; color:#25D366; font-size:0.8em; text-decoration:none;"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:15px; vertical-align:middle; margin-right:5px;">Chat</a>` : '<span style="color:#999; font-size:0.8em;">Sin número</span>';
+        
+        list.innerHTML += `
+            <div style="background: white; border-left: 5px solid ${statusColor}; padding:15px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px;">
+                <div>
+                    <h4 style="margin-bottom: 5px; color:var(--primary);">Boleto #${num} - ${data.nombre}</h4>
+                    <span style="font-size:0.75em; color: white; background: ${statusColor}; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; font-weight: bold;">${data.estatus}</span>
+                </div>
+                <div>${waLink}</div>
+            </div>
+        `;
+    }
+};
+
+window.copyAvailableNumbers = () => {
+    let disponibles = [];
+    
+    // Extraer los números leyendo las celdas directamente
+    document.querySelectorAll('.grid-cell').forEach(cell => {
+        const nameSpan = cell.querySelector('.cell-name');
+        const numSpan = cell.querySelector('.cell-num');
+        // Si no hay nombre escrito, está libre
+        if(nameSpan && nameSpan.innerText.trim() === '') {
+            disponibles.push(numSpan.innerText);
+        }
+    });
+    
+    if(disponibles.length === 0) {
+        return Swal.fire({title: '¡Agotados!', text: 'Todos los números ya están vendidos o apartados.', icon: 'info', confirmButtonColor: '#111'});
+    }
+    
+    const sorteoNombre = document.getElementById('render-nombre').innerText || "Gran Sorteo";
+    const numeroDeSorteo = document.getElementById('render-num').innerText || "";
+    
+    // Crear el texto comercial persuasivo
+    const textoPromocional = `🎫 ¡ÚLTIMOS NÚMEROS DISPONIBLES! 🎫\n\nSorteo: ${sorteoNombre} #${numeroDeSorteo}\n\nQuedan ${disponibles.length} números libres:\n👉 ${disponibles.join(', ')}\n\n¡No te quedes sin el tuyo! Responde a este mensaje para apartarlo. 🍀`;
+    
+    navigator.clipboard.writeText(textoPromocional).then(() => {
+        Swal.fire({
+            title: '¡Copiado con éxito!', 
+            text: 'El texto está en tu portapapeles. Listo para pegar en grupos de WhatsApp o Facebook.', 
+            icon: 'success', 
+            confirmButtonColor: '#28a745',
+            confirmButtonText: 'Genial'
+        });
+    });
+};
+
+</script>
+</body>
+</html>
