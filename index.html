@@ -201,7 +201,15 @@
         </div>
 
                 <div class="form-row">
-            <div class="form-group"><label>Subir Logo (Cloudinary)</label><input type="file" id="t-logo"></div>
+                        <div class="form-group">
+                <label>Subir Logo (Cloudinary)</label>
+                <input type="file" id="t-logo" onchange="if(this.files[0]){ document.getElementById('logo-preview-box').style.display='block'; document.getElementById('logo-preview-img').src=URL.createObjectURL(this.files[0]); document.getElementById('logo-status-text').innerText='Vista previa cargada. Lista para publicar.'; } else { document.getElementById('logo-preview-box').style.display='none'; }">
+                <div id="logo-preview-box" style="display:none; margin-top:10px; text-align:center; padding: 10px; background: #f9f9f9; border-radius: 8px; border: 1.5px dashed #ccc;">
+                    <span id="logo-status-text" style="display:block; font-size:0.85em; color:#007bff; font-weight:bold; margin-bottom:10px;"></span>
+                    <img id="logo-preview-img" src="" style="max-width: 100px; max-height: 100px; border-radius: 8px; border: 2px solid var(--accent); object-fit: cover;">
+                </div>
+            </div>
+
             <div class="form-group"><label>Color del Recuadro</label><input type="color" id="t-color" value="#111111" style="height: 50px; padding: 5px; cursor: pointer;"></div>
         </div>
 
@@ -322,7 +330,8 @@
     <div id="digital-ticket-render">
         </div>
     <button class="btn btn-green" style="margin-top: 15px;" onclick="takeDigitalScreenshot()">Descargar Boleto 📸</button>
-    <button class="btn btn-outline" style="border-color: white; color: white; margin-top: 10px;" onclick="closeModal('modal-digital')">❌ Cerrar Vista</button>
+        <button class="btn btn-outline" style="border-color: white; color: white; margin-top: 10px;" onclick="if(window.location.search.includes('public=true')){ window.location.href = window.location.href.split('?')[0]; } else { closeModal('modal-digital'); }">❌ Cerrar Vista</button>
+
 </div>
 
 </div>
@@ -344,7 +353,98 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
-
+let isPublicRoute = false;
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('public') === 'true') {
+    isPublicRoute = true;
+    document.getElementById('loading-screen').style.display = 'flex';
+    document.getElementById('loading-text').innerText = "Cargando boleto digital...";
+    
+    const p_uid = urlParams.get('uid');
+    const p_tpl = urlParams.get('tpl');
+    const p_num = urlParams.get('num');
+    
+    Promise.all([
+        get(ref(db, `templates/${p_uid}/${p_tpl}`)),
+        get(ref(db, `users/${p_uid}/perfil`))
+    ]).then(([snapT, snapP]) => {
+        const t = snapT.val();
+        const perfil = snapP.val() || {};
+        if(!t || !t.tickets || !t.tickets[p_num]) {
+            alert("Boleto no encontrado.");
+            return;
+        }
+        
+        const dataBoleto = t.tickets[p_num];
+        const estatus = dataBoleto.estatus;
+        const nombre = dataBoleto.nombre;
+        const marca = perfil.marca || "ZONATECNO PREMIA";
+        const oportunidades = t.oportunidades || 1;
+        const fecha = t.fecha || new Date().toLocaleDateString('es-MX');
+        const colorEstatus = estatus === 'pagado' ? '#2e7d32' : '#f57c00';
+        const totalBoletos = t.boletos || 100;
+        let celdasReales = oportunidades > 1 ? Math.ceil(totalBoletos / oportunidades) : totalBoletos;
+        
+        let todosMisNumeros = [];
+        for (const [n, d] of Object.entries(t.tickets)) {
+            if (d.nombre && d.nombre.toLowerCase().trim() === nombre.toLowerCase().trim()) {
+                let baseNum = parseInt(n, 10);
+                let bStr = baseNum < 100 ? baseNum.toString().padStart(2, '0') : '00';
+                if (baseNum === 100) bStr = '00';
+                todosMisNumeros.push(bStr);
+                for(let k=1; k<oportunidades; k++) {
+                    let extraNum = baseNum + (k * celdasReales);
+                    let extraStr = extraNum < 100 ? extraNum.toString().padStart(2, '0') : '00';
+                    if(extraNum === 100) extraStr = '00';
+                    todosMisNumeros.push(extraStr);
+                }
+            }
+        }
+        const numerosStr = todosMisNumeros.length > 0 ? [...new Set(todosMisNumeros)].sort().join(', ') : p_num;
+        
+        const dtRender = document.getElementById('digital-ticket-render');
+        dtRender.style.display = 'flex';
+        dtRender.style.background = 'white';
+        
+        dtRender.innerHTML = `
+            <div style="background: #111; color: white; text-align: left; padding: 20px 15px; position: relative;">
+                ${t.logo ? `<img src="${t.logo}" style="width: 45px; height: 45px; object-fit: contain; position: absolute; top: 15px; right: 15px; background: white; border-radius: 8px;">` : ''}
+                <h4 style="color:var(--accent); font-size: 0.8em; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 5px;">${marca}</h4>
+                <h2 style="font-size: 1.5em; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; width: 80%; line-height: 1.1;">${t.nombre}</h2>
+                <p style="font-size: 0.85em; color: #ccc;">En base a: <strong style="color: white; text-transform: uppercase;">${t.base}</strong></p>
+            </div>
+            <div style="height: 20px; background: white; position: relative; display: flex; align-items: center; justify-content: center;">
+                <div style="position: absolute; left: -10px; width: 20px; height: 20px; background: #111; border-radius: 50%;"></div>
+                <div style="border-top: 2px dashed #ddd; width: 90%;"></div>
+                <div style="position: absolute; right: -10px; width: 20px; height: 20px; background: #111; border-radius: 50%;"></div>
+            </div>
+            <div style="padding: 15px 15px 25px 15px; text-align: center; background: white; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); opacity: 0.08; pointer-events: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    ${t.logo ? `<img src="${t.logo}" style="width: 120px; height: 120px; object-fit: contain; margin-bottom: 10px; filter: grayscale(100%);">` : ''}
+                    <h1 style="font-size: 2.5em; color: #000; text-transform: uppercase; font-weight: 900; margin: 0; line-height: 1; width: 120%; word-wrap: break-word;">${t.base || ''}</h1>
+                </div>
+                <div style="position: relative; z-index: 2;">
+                    <p style="font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85em; margin-bottom: 5px;">BOLETO ASIGNADO</p>
+                    <h1 style="font-size: ${numerosStr.length > 8 ? '2.5em' : '4em'}; font-weight: 900; color: #111; line-height: 1; margin: 0 0 10px 0; word-break: break-word;">${numerosStr}</h1>
+                    <p style="font-size: 1.1em; color: #444; margin-bottom: 20px;">A nombre de: <strong style="color: #111; text-transform: uppercase; font-weight: 900;">${nombre}</strong></p>
+                    <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #eaeaea; margin-bottom: 20px;">
+                        <strong style="color: #111; font-size: 0.9em;">Fecha de compra:</strong> <span style="font-size: 0.85em; color: #555;">${fecha}</span>
+                    </div>
+                    <div style="background: ${colorEstatus}; color: white; padding: 15px; border-radius: 10px; font-weight: 900; font-size: 1.2em; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        ESTATUS: ${estatus}
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('modal-digital').style.display = 'flex';
+        document.querySelector('#modal-digital .close-modal').style.display = 'none';
+        
+        window.currentTicketNum = p_num;
+    }).catch(err => {
+        alert("Ocurrió un error al cargar el boleto.");
+    });
+}
 const ADMIN_EMAIL = "zonatecno@admin.com";
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dcg9ihpvr/image/upload";
 const UPLOAD_PRESET = "ml_default"; 
@@ -421,8 +521,10 @@ document.getElementById('btnLogin').onclick = () => {
 document.getElementById('logoutBtn').onclick = () => signOut(auth);
 
 onAuthStateChanged(auth, async (user) => {
+    if (isPublicRoute) return;
     if (user) {
         // Mostrar Pantalla de Carga
+
         const loadScreen = document.getElementById('loading-screen');
         const loadText = document.getElementById('loading-text');
         loadScreen.style.display = 'flex';
@@ -558,14 +660,17 @@ document.getElementById('btnSaveTemplate').onclick = async () => {
     const file = document.getElementById('t-logo').files[0];
     let imgUrl = "";
 
-    if(file) {
+       if(file) {
+        if(document.getElementById('logo-status-text')) document.getElementById('logo-status-text').innerText = 'Subiendo imagen a la nube... (Cargando)';
         const formData = new FormData();
+
         formData.append('file', file);
         formData.append('upload_preset', UPLOAD_PRESET);
         formData.append('folder', 'Plantillas');
         const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-        const json = await resp.json();
+                const json = await resp.json();
         imgUrl = json.secure_url;
+        if(document.getElementById('logo-status-text')) document.getElementById('logo-status-text').innerText = '¡Imagen subida con éxito!';
     }
 
                 const newTpl = {
@@ -789,7 +894,9 @@ window.saveTicketData = async () => {
     
         // Convertir etiquetas
     msj = msj.replace(/\[CLIENTE\]/g, nombre).replace(/\[NUMERO\]/g, numerosStr).replace(/\[SORTEO\]/g, sorteoNombre);
-    msj += `\n\nEstatus: *${estatus.toUpperCase()}*\n👉 *Compra más boletos:* https://wa.me/${waVendedor}\n📲 *Síguenos en FB:* ${fbEnlace}\n\n🎟️ *Descarga tu boleto digital aquí:* ${window.location.href}`;
+        let linkBoleto = `${window.location.origin}${window.location.pathname}?public=true&uid=${auth.currentUser.uid}&tpl=${currentTemplateId}&num=${currentTicketNum}`;
+    msj += `\n\nEstatus: *${estatus.toUpperCase()}*\n👉 *Compra más boletos:* https://wa.me/${waVendedor}\n📲 *Síguenos en FB:* ${fbEnlace}\n\n🎟️ *Descarga tu boleto digital aquí:* ${linkBoleto}`;
+
 
     navigator.clipboard.writeText(msj).then(() => {
 
@@ -988,3 +1095,4 @@ window.copyAvailableNumbers = () => {
 </script>
 </body>
 </html>
+
