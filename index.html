@@ -446,8 +446,9 @@ if (urlParams.get('public') === 'true') {
     });
 }
 const ADMIN_EMAIL = "zonatecno@admin.com";
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dcg9ihpvr/image/upload";
-const UPLOAD_PRESET = "ml_default"; 
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload";
+const UPLOAD_PRESET = "RifasExpress"; 
+ 
 
 let currentTemplateId = null;
 let currentTicketNum = null;
@@ -547,23 +548,17 @@ onAuthStateChanged(auth, async (user) => {
             }, 2000);
         } else {
                   
-            // Leer datos del cliente
+                       // Leer datos del cliente
             const snap = await get(ref(db, 'users/' + user.uid));
             const data = snap.val();
             
-            let isBlocked = false;
-            if (data) {
-                if (data.status === 'blocked') {
-                    isBlocked = true;
-                }
-            }
-
-            if (isBlocked) {
+            // Si la cuenta fue eliminada (!data) o está bloqueada, no lo dejamos pasar
+            if (!data || data.status === 'blocked') {
                 signOut(auth);
                 loadScreen.style.display = 'none';
-                Swal.fire({ title: 'Cuenta Suspendida', text: 'Tu cuenta ha sido bloqueada. Por favor, contacta a soporte de ZonaTecno.', icon: 'error', confirmButtonColor: '#111111' });
+                Swal.fire({ title: 'Acceso Denegado', text: 'Tu cuenta ha sido eliminada o bloqueada por la administración.', icon: 'error', confirmButtonColor: '#b71c1c' });
             } else {
-                const nombreUsr = data ? data.name : "Cliente";
+                const nombreUsr = data.name;
                 loadText.innerHTML = `Bienvenido ${nombreUsr}<br><span style='font-size:0.5em'>Gracias por ser parte de ZonaTecno</span>`;
                 setTimeout(() => { 
                     loadScreen.style.display = 'none'; 
@@ -571,6 +566,7 @@ onAuthStateChanged(auth, async (user) => {
                     loadMyTemplates(user.uid); 
                 }, 2500);
             }
+
         }
     } else {
         document.getElementById('loading-screen').style.display = 'none';
@@ -668,10 +664,17 @@ document.getElementById('btnSaveTemplate').onclick = async () => {
         formData.append('upload_preset', UPLOAD_PRESET);
         formData.append('folder', 'Plantillas');
         const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-                const json = await resp.json();
-        imgUrl = json.secure_url;
-        if(document.getElementById('logo-status-text')) document.getElementById('logo-status-text').innerText = '¡Imagen subida con éxito!';
+                        const json = await resp.json();
+        if (json.secure_url) {
+            imgUrl = json.secure_url;
+            if(document.getElementById('logo-status-text')) document.getElementById('logo-status-text').innerText = '¡Imagen subida con éxito!';
+        } else {
+            if(document.getElementById('logo-status-text')) document.getElementById('logo-status-text').innerText = 'Error al subir. Revisa Cloudinary.';
+            btn.innerText = "Publicar Sorteo"; btn.disabled = false;
+            return Swal.fire({ title: 'Error de Imagen', text: 'Cloudinary rechazó el archivo. Verifica que tu UPLOAD_PRESET "ml_default" exista y sea "Unsigned".', icon: 'error', confirmButtonColor: '#111111' });
+        }
     }
+
 
                 const newTpl = {
         nombre: document.getElementById('t-nombre').value,
