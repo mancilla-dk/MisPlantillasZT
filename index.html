@@ -80,8 +80,11 @@
     /* Esqueletos de Carga Premium */
     @keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
     .skeleton { background: #f6f7f8; background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%); background-repeat: no-repeat; background-size: 800px 100px; animation: shimmer 1.5s linear infinite; border-radius: 10px; border: 1px solid #eee; margin-bottom: 15px; }
-    .sk-card { height: 110px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-
+        .sk-card { height: 110px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .alert-duplicate { background-color: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; display: none; font-size: 0.95rem; font-weight: 600; border-left: 5px solid #dc2626; animation: fadeIn 0.3s ease; }
+    .fase-segura { background-color: #16a34a !important; color: white !important; }
+    .fase-peligro { background-color: #dc2626 !important; color: white !important; }
+    .fase-espera { background-color: #f59e0b !important; color: #1f2937 !important; }
 </style>
 
 </head>
@@ -92,39 +95,49 @@
     <div class="spinner"></div>
     <h2 id="loading-text">Iniciando sistema...</h2>
 </div>
-
-<div id="view-login" class="view">
-
-    <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: var(--primary); font-weight: 800;">Bienvenido a Plantilla Premium</h1>
-        <p style="color: #666; font-size: 0.9em;">Ingresa tus datos de acceso</p>
+<div id="view-login" class="view" style="background-color: #171a21; margin: -20px -15px; min-height: 100vh;">
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; min-height: 100vh;">
+        <div style="background: #2b303b; padding: 40px 30px; border-radius: 16px; width: 100%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <h1 style="color: #ffffff; font-weight: 800; font-size: 2.2em; text-align: center; margin-bottom: 5px; line-height: 1.2;">Acceso al<br>Panel</h1>
+            <p style="color: #94a3b8; font-size: 0.95em; text-align: center; margin-bottom: 30px;">Inicia sesión para gestionar<br>tus invitaciones.</p>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <input type="email" id="email" placeholder="Correo electrónico" style="background: #3f4452; border: 1px solid #565d6d; color: white; padding: 15px; border-radius: 8px;">
+            </div>
+            <div class="form-group" style="margin-bottom: 30px;">
+                <input type="password" id="password" placeholder="........" style="background: #3f4452; border: 1px solid #565d6d; color: white; padding: 15px; border-radius: 8px;">
+            </div>
+            
+            <button class="btn" id="btnLogin" style="background: #4a8df8; color: white; border-radius: 8px; font-weight: bold; font-size: 1.1em; text-transform: none; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: none;">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5v10z"/><path d="M14 12H4v-2h10V12z"/></svg>
+                Ingresar
+            </button>
+            
+            <p style="text-align: center; margin-top: 30px; font-size: 0.9em; color: #94a3b8;">
+                ¿No tienes cuenta? Contacta al<br>proveedor
+            </p>
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="#" id="wa-link" target="_blank" style="color: #4a8df8; font-weight: bold; text-decoration: none; font-size: 0.95em; display: inline-flex; align-items: center; gap: 5px;">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.17.69 4.19 1.85 5.85L3 22l4.31-1.11A9.92 9.92 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.66 0-3.21-.45-4.56-1.22l-.33-.19-2.55.66.68-2.45-.2-.33A7.95 7.95 0 014 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm3.5-5.5v.5c0 1.1-.9 2-2 2h-3c-1.1 0-2-.9-2-2v-.5c0-1.1.9-2 2-2h3c1.1 0 2 .9 2 2z"/></svg>
+                    Inicio con tu Plan Básico
+                </a>
+            </div>
+        </div>
     </div>
-    
-    <div class="form-group">
-        <label>Correo Electrónico</label>
-        <input type="email" id="email" placeholder="usuario@correo.com">
-    </div>
-    <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" id="password" placeholder="••••••••">
-    </div>
-    <button class="btn" id="btnLogin">Ingresar</button>
-    
-    <div style="text-align:center; margin-top:25px; font-size: 0.9em;">
-        <p>¿No tienes cuenta? <a href="#" id="wa-link" target="_blank" style="color: #25D366; font-weight: bold; text-decoration: none;">Realiza tu pago aquí (WhatsApp)</a></p>
-    </div>
-    <p style="text-align:center; margin-top:40px; font-size: 0.8em; color:#999;">Administrado por <strong>ZonaTecno</strong></p>
 </div>
+
 <div id="view-admin" class="view">
     <h2 style="margin-bottom: 20px; color: var(--primary);">Mi Panel Profesional</h2>
     <div class="form-group" style="margin-bottom: 25px;">
         <label>¿Qué deseas hacer?</label>
-        <select onchange="if(this.value === 'salir') document.getElementById('logoutBtn').click(); else switchAdminTab(this.value);" style="border-color: var(--accent); font-weight: bold;">
+              <select onchange="if(this.value === 'salir') document.getElementById('logoutBtn').click(); else switchAdminTab(this.value);" style="border-color: var(--accent); font-weight: bold;">
             <option value="clientes">Gestionar Clientes</option>
             <option value="nuevo">Registrar Nuevo Cliente</option>
+            <option value="moderacion">Aprobar Enlaces Globales</option>
             <option value="ajustes">Ajustes Web Generales</option>
             <option value="salir" style="color: red;">Cerrar Sesión</option>
         </select>
+
     </div>
 
     <div id="admin-clientes" style="overflow-x: auto;">
@@ -141,12 +154,14 @@
         </table>
     </div>
 
-    <div id="admin-nuevo" style="display:none;">
+       <div id="admin-nuevo" style="display:none;">
         <div class="form-group"><label>Nombre Completo</label><input type="text" id="reg-name"></div>
         <div class="form-group"><label>Email</label><input type="email" id="reg-email"></div>
         <div class="form-group"><label>Contraseña</label><input type="password" id="reg-pass"></div>
+        <div class="form-group"><label>Límite de plantillas al mes</label><input type="number" id="reg-limit" value="10"></div>
         <button class="btn" id="btnRegisterUser">Dar de Alta Cliente</button>
     </div>
+
          <div id="admin-ajustes" style="display:none;">
         <h3 style="margin-bottom: 15px; color: var(--primary);">Ajustes Generales del Sistema</h3>
         <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Cambia el número de soporte general (el que aparece en el login y en el panel de usuarios).</p>
@@ -156,7 +171,12 @@
         </div>
         <button class="btn btn-green" onclick="saveAdminSettings()">Guardar Ajustes</button>
     </div>
-       
+           <div id="admin-moderacion" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Moderación de Enlaces</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Los enlaces aprobados aquí serán visibles para TODOS los usuarios del sistema.</p>
+        <div id="lista-moderacion" style="display: grid; gap: 10px;"></div>
+    </div>
+
 </div>
 <div id="view-user" class="view">
     <h2 style="margin-bottom: 20px; color: var(--primary);">Mi Panel Profesional</h2>
@@ -167,9 +187,11 @@
             <option value="crear">Publicar Nuevo Sorteo</option>
             <option value="contactos">Contactar Clientes</option>
             <option value="loterias">Ver Calendario y Sorteos en Vivo</option>
-                       <option value="perfil">Mi Perfil y WhatsApp de Ventas</option>
+                                             <option value="perfil">Mi Perfil y WhatsApp de Ventas</option>
             <option value="proveedor">Contactar a mi Proveedor</option>
+            <option value="grupos">Grupos para publicar</option>
             <option value="salir" style="color: red;">Cerrar Sesión</option>
+
         </select>
 
     </div>
@@ -271,6 +293,26 @@
             <h4 style="color: #2e7d32; margin-bottom: 10px;">Chat Directo con Administración</h4>
             <a href="#" id="wa-admin-link" target="_blank" class="btn btn-green" style="display: inline-block; text-decoration: none; padding: 12px 25px; font-size: 0.9em;"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:18px; vertical-align:middle; margin-right:8px; filter: brightness(0) invert(1);">Enviar Mensaje al Administrador</a>
         </div>
+    </div>
+    <div id="user-grupos" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Panel de publicaciones</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 20px;">Control de Grupos de Facebook.</p>
+        
+        <div class="alert-duplicate" id="alertaDuplicado">
+            ⚠️ Este enlace ya está en tu lista.
+        </div>
+
+        <div class="form-row" style="margin-bottom: 20px; align-items: center;">
+            <div class="form-group" style="margin-bottom: 0; flex: 3;">
+                <input type="url" id="inputUrl" placeholder="Pega el enlace de Facebook aquí..." required style="width: 100%;">
+            </div>
+            <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                <button class="btn btn-add" style="margin-top: 0; background-color: var(--primary);" onclick="agregarEnlaceGrupo()">Agregar</button>
+            </div>
+        </div>
+
+        <ul class="link-list" id="listaEnlaces" style="list-style: none; display: flex; flex-direction: column; gap: 15px; padding: 0;">
+        </ul>
     </div>
 
 </div>
@@ -463,16 +505,53 @@ window.switchAdminTab = (tab) => {
     document.getElementById('admin-clientes').style.display = (tab === 'clientes') ? 'block' : 'none';
     document.getElementById('admin-nuevo').style.display = (tab === 'nuevo') ? 'block' : 'none';
     document.getElementById('admin-ajustes').style.display = (tab === 'ajustes') ? 'block' : 'none';
+    document.getElementById('admin-moderacion').style.display = (tab === 'moderacion') ? 'block' : 'none';
+    if(tab === 'moderacion') window.cargarModeracion();
 };
+
+window.cargarModeracion = () => {
+    const contenedor = document.getElementById('lista-moderacion');
+    onValue(ref(db, 'community_links'), (snapshot) => {
+        contenedor.innerHTML = '';
+        if(!snapshot.exists()) return contenedor.innerHTML = 'No hay enlaces.';
+        
+        snapshot.forEach(child => {
+            const item = child.val();
+            const key = child.key;
+            const estado = item.publico ? '✅ Global' : '🔒 Privado';
+            const btnColor = item.publico ? '#f59e0b' : '#16a34a';
+            const btnText = item.publico ? 'Hacer Privado' : 'Hacer Global (Aprobar)';
+
+            contenedor.innerHTML += `
+                <div style="background: white; border: 1px solid #ddd; padding: 15px; border-radius: 8px;">
+                    <p style="font-size: 0.8em; word-break: break-all;"><strong>URL:</strong> ${item.url}</p>
+                    <p style="font-size: 0.8em;">Estado actual: <strong>${estado}</strong></p>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button class="btn" style="background: ${btnColor}; padding: 8px; font-size: 0.8em; margin: 0;" onclick="window.togglePublico('${key}', ${!item.publico})">${btnText}</button>
+                        <button class="btn" style="background: #dc2626; padding: 8px; font-size: 0.8em; margin: 0;" onclick="window.eliminarEnlaceEnNube('${key}', 'admin')">Eliminar</button>
+                    </div>
+                </div>
+            `;
+        });
+    });
+};
+
+window.togglePublico = (key, nuevoEstado) => {
+    update(ref(db, `community_links/${key}`), { publico: nuevoEstado });
+    Swal.fire('Actualizado', nuevoEstado ? 'Ahora todos pueden verlo.' : 'Ahora solo el dueño puede verlo.', 'success');
+};
+
 window.switchUserTab = async (tab) => {
     document.getElementById('user-lista').style.display = (tab === 'lista') ? 'block' : 'none';
     document.getElementById('user-crear').style.display = (tab === 'crear') ? 'block' : 'none';
     document.getElementById('user-contactos').style.display = (tab === 'contactos') ? 'block' : 'none';
     document.getElementById('user-loterias').style.display = (tab === 'loterias') ? 'block' : 'none';
-    document.getElementById('user-perfil').style.display = (tab === 'perfil') ? 'block' : 'none';
+        document.getElementById('user-perfil').style.display = (tab === 'perfil') ? 'block' : 'none';
     document.getElementById('user-proveedor').style.display = (tab === 'proveedor') ? 'block' : 'none';
+    document.getElementById('user-grupos').style.display = (tab === 'grupos') ? 'block' : 'none';
 
     if(tab === 'perfil') {
+
         const snap = await get(ref(db, `users/${auth.currentUser.uid}/perfil`));
         const p = snap.val();
         if(p) {
@@ -482,6 +561,39 @@ window.switchUserTab = async (tab) => {
             document.getElementById('user-msg').value = p.msg || '';
         }
     }
+            if(tab === 'grupos') {
+            let locales = JSON.parse(localStorage.getItem('enlacesGrupos')) || [];
+            if(locales.length > 0) {
+                const gruposRef = ref(db, 'community_links');
+                const snapshot = await get(gruposRef);
+                let existentes = [];
+                if (snapshot.exists()) {
+                    Object.values(snapshot.val()).forEach(g => existentes.push(g.url ? g.url.toLowerCase() : ''));
+                }
+                
+                let subidos = 0;
+                for (let i = 0; i < locales.length; i++) {
+                    let urlLocal = locales[i].url || locales[i];
+                    if (typeof urlLocal !== 'string') continue;
+                    
+                    if (!existentes.includes(urlLocal.toLowerCase())) {
+                        await push(gruposRef, {
+                            url: urlLocal,
+                            owner: auth.currentUser.uid,
+                            publico: false,
+                            lastOpened: locales[i].lastOpened || null,
+                            fecha: Date.now()
+                        });
+                        subidos++;
+                        existentes.push(urlLocal.toLowerCase());
+                    }
+                }
+                if (subidos > 0) {
+                    Swal.fire('¡Sincronizado!', `Se han detectado y subido ${subidos} grupos de tu almacenamiento local a la nube.`, 'success');
+                }
+            }
+        }
+
 };
 
 window.saveUserProfile = async () => {
@@ -560,11 +672,13 @@ onAuthStateChanged(auth, async (user) => {
             } else {
                 const nombreUsr = data.name;
                 loadText.innerHTML = `Bienvenido ${nombreUsr}<br><span style='font-size:0.5em'>Gracias por ser parte de ZonaTecno</span>`;
-                setTimeout(() => { 
+                               setTimeout(() => { 
                     loadScreen.style.display = 'none'; 
                     showView('view-user'); 
                     loadMyTemplates(user.uid); 
+                    window.renderizarListaGrupos();
                 }, 2500);
+
             }
 
         }
@@ -585,7 +699,8 @@ document.getElementById('btnRegisterUser').onclick = async () => {
         const secondaryAuth = getAuth(secondaryApp);
         const res = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
 
-                await set(ref(db, 'users/' + res.user.uid), { name, email, status: 'active', fechaAlta: new Date().toLocaleDateString('es-MX') });
+                       const limiteConfigurado = parseInt(document.getElementById('reg-limit').value) || 10;
+        await set(ref(db, 'users/' + res.user.uid), { name, email, status: 'active', limite: limiteConfigurado, fechaAlta: new Date().toLocaleDateString('es-MX') });
 
         await signOut(secondaryAuth);
         
@@ -649,11 +764,27 @@ window.saveAdminSettings = async () => {
 };
 
 // --- USUARIO: CREAR PLANTILLA ---
+
 document.getElementById('btnSaveTemplate').onclick = async () => {
     const btn = document.getElementById('btnSaveTemplate');
-    btn.innerText = "Subiendo imagen y publicando..."; btn.disabled = true;
+    btn.innerText = "Verificando plan..."; btn.disabled = true;
+
+    try {
+        const userSnap = await get(ref(db, `users/${auth.currentUser.uid}`));
+        const limite = userSnap.val()?.limite || 0;
+        const templatesSnap = await get(ref(db, `templates/${auth.currentUser.uid}`));
+        const totalCreadas = templatesSnap.exists() ? Object.keys(templatesSnap.val()).length : 0;
+
+        if (totalCreadas >= limite && limite > 0) {
+            btn.innerText = "Publicar Sorteo"; btn.disabled = false;
+            return Swal.fire({ title: 'Límite alcanzado', text: 'Has llegado a tu límite mensual de plantillas. Actualiza tu plan para crear más.', icon: 'warning', confirmButtonColor: '#d4af37' });
+        }
+    } catch(e) { console.error(e); }
+
+    btn.innerText = "Subiendo imagen y publicando..."; 
 
     const file = document.getElementById('t-logo').files[0];
+
     let imgUrl = "";
 
        if(file) {
@@ -1094,8 +1225,113 @@ window.copyAvailableNumbers = () => {
         });
     });
 };
+// --- LOGICA DE CONTROL DE GRUPOS EN LA NUBE ---
+window.agregarEnlaceGrupo = async () => {
+    const input = document.getElementById('inputUrl');
+    let url = input.value.trim();
+    if (!url) { Swal.fire('Error', 'Pega un enlace primero.', 'error'); return; }
+    if (url.endsWith('/')) url = url.slice(0, -1);
 
+    const nuevoGrupo = {
+        url: url,
+        owner: auth.currentUser.uid,
+        publico: false, // Por defecto es privado hasta que el admin apruebe
+        lastOpened: null,
+        fecha: Date.now()
+    };
+
+    const gruposRef = ref(db, 'community_links');
+    const snapshot = await get(gruposRef);
+    let existe = false;
+    if (snapshot.exists()) {
+        Object.values(snapshot.val()).forEach(g => { if(g.url.toLowerCase() === url.toLowerCase()) existe = true; });
+    }
+
+    if (existe) {
+        document.getElementById('alertaDuplicado').style.display = 'block';
+        setTimeout(() => document.getElementById('alertaDuplicado').style.display = 'none', 3000);
+        return;
+    }
+
+            await push(gruposRef, nuevoGrupo);
+        
+        let locales = JSON.parse(localStorage.getItem('enlacesGrupos')) || [];
+        locales.push(nuevoGrupo);
+        localStorage.setItem('enlacesGrupos', JSON.stringify(locales));
+
+        input.value = '';
+        Swal.fire('¡Guardado!', 'El grupo se guardó localmente y en la nube. Pendiente de aprobación del admin para ser global.', 'success');
+
+};
+
+
+window.determinarFaseGrupo = (lastOpened) => {
+    if (!lastOpened) return { texto: 'Nuevo - Listo para abrir', clase: 'fase-segura' };
+    const ahora = Date.now();
+    const minutosPasados = Math.floor((ahora - lastOpened) / (1000 * 60));
+
+    if (minutosPasados < 30) return { texto: `Abierto (hace ${minutosPasados} min) - ⚠️ Fase Spam`, clase: 'fase-peligro' };
+    else if (minutosPasados < 120) return { texto: `Pausa (hace ${minutosPasados} min) - Precaución`, clase: 'fase-espera' };
+    else return { texto: `Fase Segura - Listo para publicar`, clase: 'fase-segura' };
+};
+
+window.renderizarListaGrupos = () => {
+    const lista = document.getElementById('listaEnlaces');
+    if (!lista || !auth.currentUser) return;
+
+    onValue(ref(db, 'community_links'), (snapshot) => {
+        lista.innerHTML = '';
+        if (!snapshot.exists()) return;
+
+        let contador = 1;
+        const data = snapshot.val();
+        
+        Object.keys(data).reverse().forEach((key) => {
+            const item = data[key];
+            // Solo mostrar si es mío O si es público (aprobado)
+            if (item.owner === auth.currentUser.uid || item.publico === true) {
+                const fase = window.determinarFaseGrupo(item.lastOpened);
+                const li = document.createElement('li');
+                li.style = "background: #fafbfc; border: 1px solid #e5e7eb; padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 12px;";
+                
+                const esGlobal = item.publico ? '<span style="color: #2563eb; font-size: 0.7rem; font-weight: bold;">[GLOBAL]</span>' : '';
+
+                li.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem; font-weight: 800;">Grupo ${contador} ${esGlobal}</h4>
+                            <span class="badge ${fase.clase}" style="padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; text-align: right;">${fase.texto}</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-top: 5px; flex-direction: row;">
+                            <a href="${item.url}" target="_blank" class="btn btn-green" style="flex: 2; margin-top: 0; padding: 10px; font-size: 0.85rem; text-align: center; text-decoration: none; border-radius: 6px;" onclick="window.registrarAperturaEnNube('${key}')">Abrir Publicación</a>
+                            <button class="btn" style="background-color: #dc2626; color: white; flex: 1; margin-top: 0; padding: 10px; font-size: 0.85rem; border-radius: 6px; box-shadow: none;" onclick="window.eliminarEnlaceEnNube('${key}', '${item.owner}')">Borrar</button>
+                        </div>
+                    </div>
+                `;
+                lista.appendChild(li);
+                contador++;
+            }
+        });
+    });
+};
+
+window.registrarAperturaEnNube = (key) => {
+    update(ref(db, `community_links/${key}`), { lastOpened: Date.now() });
+};
+
+window.eliminarEnlaceEnNube = (key, ownerId) => {
+    if (ownerId !== auth.currentUser.uid && auth.currentUser.email !== ADMIN_EMAIL) {
+        return Swal.fire('Error', 'No puedes borrar un grupo global que no te pertenece.', 'error');
+    }
+    Swal.fire({
+        title: '¿Borrar este grupo?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, borrar'
+    }).then((res) => { if(res.isConfirmed) set(ref(db, `community_links/${key}`), null); });
+};
+setInterval(window.renderizarListaGrupos, 60000);
+        
 </script>
 </body>
-</html>
-
+               </html>
