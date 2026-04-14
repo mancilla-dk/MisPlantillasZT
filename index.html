@@ -1096,7 +1096,12 @@ window.openGrid = async (templateId) => {
 function renderGridCells(total, ticketsData, oportunidades = 1) {
     const grid = document.getElementById('ticket-grid');
     grid.innerHTML = '';
-    
+        if (oportunidades >= 3) {
+        grid.style.width = '100%';
+    } else {
+        grid.style.width = '';
+    }
+
     let celdasReales = oportunidades > 1 ? Math.ceil(total / oportunidades) : total;
 
     for (let i = 1; i <= celdasReales; i++) {
@@ -1126,10 +1131,15 @@ function renderGridCells(total, ticketsData, oportunidades = 1) {
             displayNums += `</div>`;
         }
 
-        const cell = document.createElement('div');
+                const cell = document.createElement('div');
         cell.className = 'grid-cell';
+        if (oportunidades >= 3) {
+            cell.style.minHeight = '70px';
+            cell.style.fontSize = '0.75em';
+        }
         
         cell.innerHTML = `
+
             ${displayNums}
             <span class="cell-name ${colorClass}" style="line-height: 1.1;">${nameHTML}</span>
         `;
@@ -1352,11 +1362,19 @@ window.generateDigitalTicket = async () => {
 window.takeDigitalScreenshot = () => {
     const element = document.getElementById('digital-ticket-render');
     html2canvas(element, { backgroundColor: '#111' }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
         const link = document.createElement('a');
         link.download = `Boleto_${currentTicketNum}.png`;
-        link.href = canvas.toDataURL();
+        link.href = imgData;
         link.click();
         closeModal('modal-digital');
+        
+        Swal.fire({
+            title: '¡Boleto Descargado!',
+            html: '<p style="font-size: 0.95em; margin-bottom: 15px;">Si tu app no inició la descarga, <b>mantén presionada la imagen</b> de abajo para guardarla o compartirla directamente.</p><img src="' + imgData + '" style="width: 100%; max-height: 50vh; object-fit: contain; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">',
+            confirmButtonText: 'Cerrar Vista',
+            confirmButtonColor: '#28a745'
+        });
     });
 };
 
@@ -1364,17 +1382,20 @@ window.takeGridScreenshot = () => {
     Swal.fire({ title: 'Generando imagen...', text: 'Espera un momento, estamos preparando tu descarga.', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     const element = document.getElementById('capture-area');
     html2canvas(element, { scale: 3, useCORS: true, allowTaint: true, logging: false }).then(canvas => {
-        canvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Plantilla_${document.getElementById('render-nombre').innerText}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            Swal.fire('¡Descarga Exitosa!', 'La imagen se ha guardado en tu dispositivo.', 'success');
-        }, 'image/png');
+        const imgData = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = `Plantilla_${document.getElementById('render-nombre').innerText}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        Swal.fire({
+            title: '¡Descarga Exitosa!',
+            html: '<p style="font-size: 0.95em; margin-bottom: 15px;">Si tu galería no muestra la descarga, <b>mantén presionada la imagen</b> aquí abajo y selecciona "Guardar imagen" o "Compartir".</p><img src="' + imgData + '" style="width: 100%; max-height: 50vh; object-fit: contain; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">',
+            confirmButtonText: 'Cerrar Vista',
+            confirmButtonColor: '#28a745'
+        });
     });
 };
 
