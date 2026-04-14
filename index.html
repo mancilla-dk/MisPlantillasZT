@@ -1060,10 +1060,13 @@ window.openGrid = async (templateId) => {
         bgWatermark.style.display = 'none';
     }
 
-    const gridCont = document.getElementById('ticket-grid');
+          const gridCont = document.getElementById('ticket-grid');
     gridCont.style.backgroundColor = t.color || '#111111';
     gridCont.style.borderColor = t.color || '#111111';
     document.querySelector('.template-header-render h2').style.color = t.color || '#b71c1c';
+    document.getElementById('capture-area').style.maxWidth = '500px';
+
+
     // Cargar Logo Oficial según la base
     const officialLogoImg = document.getElementById('render-logo-oficial');
     if (!officialLogoImg) {
@@ -1094,13 +1097,21 @@ window.openGrid = async (templateId) => {
 };
 
 function renderGridCells(total, ticketsData, oportunidades = 1) {
-    const grid = document.getElementById('ticket-grid');
+           const grid = document.getElementById('ticket-grid');
     grid.innerHTML = '';
-        if (oportunidades >= 3) {
-        grid.style.width = '100%';
-    } else {
+           if (oportunidades === 1) {
+        grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
         grid.style.width = '';
+          } else {
+        if (oportunidades >= 3) {
+            grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            grid.style.width = '100%';
+        } else {
+            grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+            grid.style.width = '';
+        }
     }
+
 
     let celdasReales = oportunidades > 1 ? Math.ceil(total / oportunidades) : total;
 
@@ -1131,19 +1142,22 @@ function renderGridCells(total, ticketsData, oportunidades = 1) {
             displayNums += `</div>`;
         }
 
-                const cell = document.createElement('div');
+                      const cell = document.createElement('div');
         cell.className = 'grid-cell';
         if (oportunidades >= 3) {
-            cell.style.minHeight = '70px';
-            cell.style.fontSize = '0.75em';
+            cell.style.minHeight = '45px';
+            cell.style.fontSize = '0.65em';
+              } else if (oportunidades === 1) {
+            cell.style.minHeight = '20px';
+            cell.style.fontSize = '0.55em';
         }
-        
+                     
         cell.innerHTML = `
 
-            ${displayNums}
+            <div style="${oportunidades === 1 ? 'font-weight: 900; font-size: 0.9em; margin-right: 5px;' : ''}">${displayNums}</div>
             <span class="cell-name ${colorClass}" style="line-height: 1.1;">${nameHTML}</span>
         `;
-
+                                              
         cell.onclick = () => openTicketModal(numStr, td);
         grid.appendChild(cell);
     }
