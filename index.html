@@ -270,8 +270,22 @@
                     </div>
                 </div>
             </div>
-                                                     <div class="form-group"><label>Color del Recuadro</label><input type="color" id="t-color" value="#111111" style="height: 50px; padding: 5px; cursor: pointer;"></div>
+                 <div class="form-row">
+            <div class="form-group"><label>Color del Recuadro</label><input type="color" id="t-color" value="#111111" style="height: 50px; padding: 5px; cursor: pointer;"></div>
+            <div class="form-group">
+                <label>Fondo de la Plantilla (Opcional)</label>
+                <input type="file" id="t-bg" accept="image/*" style="padding: 10px; border: 2px dashed var(--accent); background: #fffcf5; cursor: pointer; color: #555; width: 100%; border-radius: 8px;" onchange="if(this.files[0]){ document.getElementById('bg-preview-box').style.display='flex'; document.getElementById('bg-preview-img').src=URL.createObjectURL(this.files[0]); document.getElementById('bg-status-text').innerText='Vista previa lista (Se subirá al guardar)'; } else { document.getElementById('bg-preview-box').style.display='none'; }">
+                <div id="bg-preview-box" style="display:none; margin-top:15px; align-items:center; gap: 15px; padding: 15px; background: white; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                    <img id="bg-preview-img" src="" style="width: 60px; height: 60px; border-radius: 10px; border: 2px solid var(--accent); object-fit: cover;">
+                    <div style="flex-grow: 1; text-align: left;">
+                        <span id="bg-status-text" style="display:block; font-size:0.9em; color:#2e7d32; font-weight:bold;"></span>
+                        <span style="font-size:0.75em; color:#666;">El fondo se subirá automáticamente.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+                                                    
         <div class="form-group"><label>Descripción Corta</label><textarea id="t-desc" rows="2" placeholder="Se sortea el 29 de Marzo con $14 pesitos"></textarea></div>
 
                  
@@ -360,8 +374,10 @@
         <p style="text-align:center; font-size:0.9em; color:#004085; font-weight:700; margin-bottom:15px; padding: 12px; background: #cce5ff; border: 1px solid #b8daff; border-radius: 8px;">👉 Toca un boleto de la cuadrícula para registrar a un cliente.</p>
 
                                                    <div id="capture-area" style="background: white; padding: 15px; border-radius: 0px; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 500px; margin: 0 auto; position: relative; box-sizing: border-box; overflow: hidden;">
+<div id="render-bg" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; opacity:0.3; background-size:cover; background-position:center; background-repeat:no-repeat;"></div>
 
-                    <div id="watermark-container" style="position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); opacity: 0.15; pointer-events: none; z-index: 10; text-align: center; width: 90%;">
+                                        <div id="watermark-container" style="position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); opacity: 0.15; pointer-events: none; z-index: 10; text-align: center; width: 90%;">
+                                                                                                                      
                         <img id="render-watermark" src="" style="display:none; width: 100%; max-height: 250px; object-fit: contain; margin-bottom: 5px;">
                         <h1 id="render-watermark-base" style="font-size: 2.2em; color: #111; text-transform: uppercase; font-weight: 900; margin: 0; text-shadow: 2px 2px 4px rgba(255,255,255,0.8);"></h1>
                     </div>
@@ -369,13 +385,14 @@
 
                        
             <img id="render-logo" src="" style="display:none; position: absolute; top: 0; right: 0; width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 2px solid var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h2 style="padding-left: 55px; padding-right: 55px; color: #b71c1c; font-weight: 900; font-size: 1.1em; text-transform: uppercase; margin-bottom: 5px; text-align: center; line-height: 1.2;"><span id="render-nombre"></span> #<span id="render-num"></span></h2>
-            <div class="prize-info" style="padding: 5px; margin: 5px 0; font-size: 0.85em;">
+                        <h2 style="padding-left: 55px; padding-right: 55px; color: #b71c1c; font-weight: 900; font-size: 1.1em; text-transform: uppercase; margin-bottom: 5px; text-align: center; line-height: 1.2; text-shadow: 0px 0px 8px rgba(255,255,255,1), 0px 0px 3px rgba(255,255,255,0.9);"><span id="render-nombre"></span> #<span id="render-num"></span></h2>
+            <div class="prize-info" style="padding: 5px; margin: 5px 0; font-size: 0.85em; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                 <span>🏆 Premios: <span id="render-pqty"></span></span>
                 <span>💰 Gana: <span id="render-pmonto"></span></span>
             </div>
-            <p id="render-desc" style="font-size: 0.9em; color: #444; font-weight: 600; margin-top: 5px;"></p>
-            <p style="font-size: 0.75em; color: #666; margin-top: 2px;">En base a: <strong style="color: var(--primary); text-transform: uppercase;"><span id="render-base"></span></strong></p>
+            <p id="render-desc" style="font-size: 0.9em; color: #444; font-weight: 800; margin-top: 5px; text-shadow: 0px 0px 5px rgba(255,255,255,1);"></p>
+            <p style="font-size: 0.75em; color: #111; margin-top: 2px; font-weight: bold; text-shadow: 0px 0px 5px rgba(255,255,255,1);">En base a: <strong style="color: var(--primary); text-transform: uppercase;"><span id="render-base"></span></strong></p>
+
         </div>
 
         <div class="grid-container" id="ticket-grid"></div>
@@ -962,24 +979,43 @@ document.getElementById('btnSaveTemplate').onclick = async () => {
             return Swal.fire({ title: 'Error de Imagen', text: 'Cloudinary rechazó el archivo. Verifica que tu UPLOAD_PRESET "ml_default" exista y sea "Unsigned".', icon: 'error', confirmButtonColor: '#111111' });
         }
     }
+              let bgUrl = "";
+        const fileBg = document.getElementById('t-bg') ? document.getElementById('t-bg').files[0] : null;
+        if(fileBg) {
+            btn.innerText = "Subiendo fondo...";
+            if(document.getElementById('bg-status-text')) document.getElementById('bg-status-text').innerText = 'Subiendo fondo a la nube... (Cargando)';
+            const formDataBg = new FormData();
+            formDataBg.append('file', fileBg);
+            formDataBg.append('upload_preset', UPLOAD_PRESET);
+            formDataBg.append('folder', 'Plantillas');
+            try {
+                const respBg = await fetch(CLOUDINARY_URL, { method: 'POST', body: formDataBg });
+                const jsonBg = await respBg.json();
+                if (jsonBg.secure_url) {
+                    bgUrl = jsonBg.secure_url;
+                    if(document.getElementById('bg-status-text')) document.getElementById('bg-status-text').innerText = '¡Fondo subido con éxito!';
+                } else {
+                    if(document.getElementById('bg-status-text')) document.getElementById('bg-status-text').innerText = 'Error al subir fondo.';
+                }
+            } catch(e) { console.error(e); }
+        }
 
-
-                const newTpl = {
-        nombre: document.getElementById('t-nombre').value,
-        numero: document.getElementById('t-numero').value,
-        base: document.getElementById('t-base').value,
-        boletos: parseInt(document.getElementById('t-boletos').value) || 100,
-        premiosQty: document.getElementById('t-premios-qty').value,
-        premiosMonto: document.getElementById('t-premios-monto').value,
-        oportunidades: parseInt(document.getElementById('t-oportunidades').value) || 1,
-        desc: document.getElementById('t-desc').value,
-        color: document.getElementById('t-color').value || '#111111',
-        logo: imgUrl,
-        fecha: new Date().toLocaleDateString('es-MX'),
-        tickets: {} 
-    };
-
-
+        const newTpl = {
+            nombre: document.getElementById('t-nombre').value,
+            numero: document.getElementById('t-numero').value,
+            base: document.getElementById('t-base').value,
+            boletos: parseInt(document.getElementById('t-boletos').value) || 100,
+            premiosQty: document.getElementById('t-premios-qty').value,
+            premiosMonto: document.getElementById('t-premios-monto').value,
+            oportunidades: parseInt(document.getElementById('t-oportunidades').value) || 1,
+            desc: document.getElementById('t-desc').value,
+            color: document.getElementById('t-color').value || '#111111',
+            logo: imgUrl,
+            fondo: bgUrl,
+            fecha: new Date().toLocaleDateString('es-MX'),
+            tickets: {} 
+        };
+                
     const tplRef = push(ref(db, 'templates/' + auth.currentUser.uid));
     await set(tplRef, newTpl);
     
@@ -1060,10 +1096,20 @@ window.openGrid = async (templateId) => {
         bgWatermark.style.display = 'none';
     }
 
-          const gridCont = document.getElementById('ticket-grid');
+                    const gridCont = document.getElementById('ticket-grid');
+    gridCont.style.position = 'relative';
+    gridCont.style.zIndex = '1';
     gridCont.style.backgroundColor = t.color || '#111111';
     gridCont.style.borderColor = t.color || '#111111';
-    document.querySelector('.template-header-render h2').style.color = t.color || '#b71c1c';
+
+    const bgRender = document.getElementById('render-bg');
+    if(t.fondo) {
+        bgRender.style.backgroundImage = `url('${t.fondo}')`;
+        bgRender.style.display = 'block';
+    } else {
+        bgRender.style.display = 'none';
+    }
+ document.querySelector('.template-header-render h2').style.color = t.color || '#b71c1c';
     document.getElementById('capture-area').style.maxWidth = '500px';
 
 
@@ -1099,19 +1145,18 @@ window.openGrid = async (templateId) => {
 function renderGridCells(total, ticketsData, oportunidades = 1) {
            const grid = document.getElementById('ticket-grid');
     grid.innerHTML = '';
-           if (oportunidades === 1) {
+                      if (oportunidades === 1) {
         grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
-        grid.style.width = '';
+        grid.style.width = '100%';
           } else {
         if (oportunidades >= 3) {
             grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
             grid.style.width = '100%';
         } else {
             grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
-            grid.style.width = '';
+            grid.style.width = '100%';
         }
     }
-
 
     let celdasReales = oportunidades > 1 ? Math.ceil(total / oportunidades) : total;
 
@@ -1375,7 +1420,8 @@ window.generateDigitalTicket = async () => {
 // Funciones de html2canvas
 window.takeDigitalScreenshot = () => {
     const element = document.getElementById('digital-ticket-render');
-    html2canvas(element, { backgroundColor: '#111' }).then(canvas => {
+    html2canvas(element, { backgroundColor: '#111', useCORS: true, allowTaint: true, scale: 3 }).then(canvas => {
+
         const imgData = canvas.toDataURL('image/png');
         const link = document.createElement('a');
         link.download = `Boleto_${currentTicketNum}.png`;
@@ -1687,4 +1733,4 @@ window.sendResetEmail = (email) => {
 
 </script>
 </body>
-   </html>
+                       </html>
