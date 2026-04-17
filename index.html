@@ -251,9 +251,10 @@
             </div>
             <div class="form-group"><label>Boletos (Máx 100)</label><input type="number" id="t-boletos" value="100" max="100"></div>
         </div>
-                <div class="form-row">
+                        <div class="form-row">
             <div class="form-group"><label>Cant. de Premios</label><input type="number" id="t-premios-qty" placeholder="Ej: 3"></div>
             <div class="form-group"><label>Monto/Premio</label><input type="text" id="t-premios-monto" placeholder="Ej: $1000 MXN o Auto"></div>
+            <div class="form-group"><label>Precio</label><input type="text" id="t-precio" placeholder="Ej: $50"></div>
         </div>
 
         <div class="form-row">
@@ -378,18 +379,21 @@
 
                                         <div id="watermark-container" style="position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); opacity: 0.15; pointer-events: none; z-index: 10; text-align: center; width: 90%;">
                                                                                                                       
-                        <img id="render-watermark" src="" style="display:none; width: 100%; max-height: 250px; object-fit: contain; margin-bottom: 5px;">
+                        <img id="render-watermark" src="" crossorigin="anonymous" style="display:none; width: 100%; max-height: 250px; object-fit: contain; margin-bottom: 5px;">
                         <h1 id="render-watermark-base" style="font-size: 2.2em; color: #111; text-transform: uppercase; font-weight: 900; margin: 0; text-shadow: 2px 2px 4px rgba(255,255,255,0.8);"></h1>
                     </div>
                 <div class="template-header-render" style="position: relative; text-align: center; margin-bottom: 5px; min-height: 60px; z-index: 2;">
 
                        
-            <img id="render-logo" src="" style="display:none; position: absolute; top: 0; right: 0; width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 2px solid var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                       <img id="render-logo" src="" crossorigin="anonymous" style="display:none; position: absolute; top: 0; right: 0; width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 2px solid var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+
                         <h2 style="padding-left: 55px; padding-right: 55px; color: #b71c1c; font-weight: 900; font-size: 1.1em; text-transform: uppercase; margin-bottom: 5px; text-align: center; line-height: 1.2; text-shadow: 0px 0px 8px rgba(255,255,255,1), 0px 0px 3px rgba(255,255,255,0.9);"><span id="render-nombre"></span> #<span id="render-num"></span></h2>
-            <div class="prize-info" style="padding: 5px; margin: 5px 0; font-size: 0.85em; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                       <div class="prize-info" style="padding: 5px; margin: 5px 0; font-size: 0.7em; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap;">
                 <span>🏆 Premios: <span id="render-pqty"></span></span>
                 <span>💰 Gana: <span id="render-pmonto"></span></span>
+                <span>🎟️ Precio: <span id="render-pprecio"></span></span>
             </div>
+
             <p id="render-desc" style="font-size: 0.9em; color: #444; font-weight: 800; margin-top: 5px; text-shadow: 0px 0px 5px rgba(255,255,255,1);"></p>
             <p style="font-size: 0.75em; color: #111; margin-top: 2px; font-weight: bold; text-shadow: 0px 0px 5px rgba(255,255,255,1);">En base a: <strong style="color: var(--primary); text-transform: uppercase;"><span id="render-base"></span></strong></p>
 
@@ -1000,13 +1004,14 @@ document.getElementById('btnSaveTemplate').onclick = async () => {
             } catch(e) { console.error(e); }
         }
 
-        const newTpl = {
+              const newTpl = {
             nombre: document.getElementById('t-nombre').value,
             numero: document.getElementById('t-numero').value,
             base: document.getElementById('t-base').value,
             boletos: parseInt(document.getElementById('t-boletos').value) || 100,
             premiosQty: document.getElementById('t-premios-qty').value,
             premiosMonto: document.getElementById('t-premios-monto').value,
+            precioBoleto: document.getElementById('t-precio').value,
             oportunidades: parseInt(document.getElementById('t-oportunidades').value) || 1,
             desc: document.getElementById('t-desc').value,
             color: document.getElementById('t-color').value || '#111111',
@@ -1045,11 +1050,13 @@ function loadMyTemplates(uid) {
                         <h3 style="color:var(--primary); margin-bottom:5px;">${t.nombre} #${t.numero}</h3>
                         <p style="font-size:0.85em; color:#666;">${t.boletos} boletos | Base: ${t.base}</p>
                     </div>
-                    <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;">
+                                       <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;">
                         <button class="btn" style="flex:1; min-width:120px; padding:10px 5px; margin-top:0; font-size:0.85em;" onclick="openGrid('${child.key}')">Rellenar Plantilla</button>
-                        <button class="btn btn-outline" style="flex:1; min-width:80px; padding:10px 5px; margin-top:0; font-size:0.85em;" onclick="Swal.fire('Próximamente', 'El panel de edición se activará en la siguiente fase.', 'info')">Editar</button>
+                        <button class="btn btn-outline" style="flex:1; min-width:80px; padding:10px 5px; margin-top:0; font-size:0.85em;" onclick="editTemplate('${child.key}')">Editar</button>
                         <button class="btn" style="flex:1; min-width:80px; padding:10px 5px; background:#b71c1c; color:white; margin-top:0; font-size:0.85em;" onclick="deleteTemplate('${child.key}')">Eliminar</button>
+                        <button class="btn btn-green" style="flex:1; min-width:80px; padding:10px 5px; margin-top:0; font-size:0.85em;" onclick="openGrid('${child.key}').then(() => setTimeout(takeGridScreenshot, 800))">Descargar</button>
                     </div>
+
                 </div>
             `;
             
@@ -1071,20 +1078,71 @@ window.deleteTemplate = (templateId) => {
         }
     });
 };
+window.editTemplate = async (templateId) => {
+    const snap = await get(ref(db, `templates/${auth.currentUser.uid}/${templateId}`));
+    const t = snap.val();
+    if(!t) return;
+    
+    Swal.fire({
+        title: 'Editar Sorteo',
+        html: `
+            <div style="text-align: left; font-size: 0.9em;">
+                <label style="font-weight:bold; color:#555;">Nombre del Sorteo</label>
+                <input id="swal-t-nombre" class="swal2-input" type="text" value="${t.nombre || ''}" style="width: 85%; margin: 5px auto 15px; padding: 10px;">
+                
+                <label style="font-weight:bold; color:#555;">Sorteo #</label>
+                <input id="swal-t-numero" class="swal2-input" type="text" value="${t.numero || ''}" style="width: 85%; margin: 5px auto 15px; padding: 10px;">
+                
+                <label style="font-weight:bold; color:#555;">Monto / Premio</label>
+                <input id="swal-t-pmonto" class="swal2-input" type="text" value="${t.premiosMonto || ''}" style="width: 85%; margin: 5px auto 15px; padding: 10px;">
+
+                <label style="font-weight:bold; color:#555;">Precio Boleto</label>
+                <input id="swal-t-precio" class="swal2-input" type="text" value="${t.precioBoleto || ''}" style="width: 85%; margin: 5px auto 15px; padding: 10px;">
+
+                <label style="font-weight:bold; color:#555;">Descripción Corta</label>
+                <textarea id="swal-t-desc" class="swal2-textarea" style="width: 85%; margin: 5px auto 15px; padding: 10px;">${t.desc || ''}</textarea>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Actualizar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#28a745',
+        preConfirm: () => {
+            return {
+                nombre: document.getElementById('swal-t-nombre').value,
+                numero: document.getElementById('swal-t-numero').value,
+                premiosMonto: document.getElementById('swal-t-pmonto').value,
+                precioBoleto: document.getElementById('swal-t-precio').value,
+                desc: document.getElementById('swal-t-desc').value
+            }
+        }
+    }).then((res) => {
+        if (res.isConfirmed) {
+            update(ref(db, `templates/${auth.currentUser.uid}/${templateId}`), {
+                nombre: res.value.nombre,
+                numero: res.value.numero,
+                premiosMonto: res.value.premiosMonto,
+                precioBoleto: res.value.precioBoleto,
+                desc: res.value.desc
+            });
+            Swal.fire('¡Actualizado!', 'Los datos del sorteo han sido actualizados.', 'success');
+        }
+    });
+};
 
 // --- USUARIO: RENDERIZAR CUADRICULA ---
 window.openGrid = async (templateId) => {
     currentTemplateId = templateId;
     const snap = await get(ref(db, `templates/${auth.currentUser.uid}/${templateId}`));
     const t = snap.val();
-
     document.getElementById('render-nombre').innerText = t.nombre;
     document.getElementById('render-num').innerText = t.numero;
     document.getElementById('render-pqty').innerText = t.premiosQty;
     document.getElementById('render-pmonto').innerText = t.premiosMonto;
+    document.getElementById('render-pprecio').innerText = t.precioBoleto || 'N/A';
     document.getElementById('render-desc').innerText = t.desc;
     document.getElementById('render-base').innerText = t.base;
-    
+        
        const logoImg = document.getElementById('render-logo');
     const bgWatermark = document.getElementById('render-watermark');
     document.getElementById('render-watermark-base').innerText = t.base || '';
@@ -1115,13 +1173,15 @@ window.openGrid = async (templateId) => {
 
     // Cargar Logo Oficial según la base
     const officialLogoImg = document.getElementById('render-logo-oficial');
-    if (!officialLogoImg) {
+       if (!officialLogoImg) {
         const header = document.querySelector('.template-header-render');
         const img = document.createElement('img');
         img.id = 'render-logo-oficial';
+        img.crossOrigin = "anonymous";
         img.style = "position: absolute; top: 0; left: 0; width: 45px; height: 45px; object-fit: contain; border-radius: 8px; z-index: 5;";
         header.prepend(img);
     }
+
     const snapSet = await get(ref(db, 'settings'));
     const settings = snapSet.val() || {};
     const logoLot = settings.logo_loteria;
@@ -1420,7 +1480,8 @@ window.generateDigitalTicket = async () => {
 // Funciones de html2canvas
 window.takeDigitalScreenshot = () => {
     const element = document.getElementById('digital-ticket-render');
-    html2canvas(element, { backgroundColor: '#111', useCORS: true, allowTaint: true, scale: 3 }).then(canvas => {
+    html2canvas(element, { backgroundColor: '#111', useCORS: true, scale: 3 }).then(canvas => {
+
 
         const imgData = canvas.toDataURL('image/png');
         const link = document.createElement('a');
@@ -1441,7 +1502,8 @@ window.takeDigitalScreenshot = () => {
 window.takeGridScreenshot = () => {
     Swal.fire({ title: 'Generando imagen...', text: 'Espera un momento, estamos preparando tu descarga.', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     const element = document.getElementById('capture-area');
-    html2canvas(element, { scale: 3, useCORS: true, allowTaint: true, logging: false }).then(canvas => {
+    html2canvas(element, { scale: 3, useCORS: true, logging: false }).then(canvas => {
+
         const imgData = canvas.toDataURL('image/png');
         const link = document.createElement('a');
         link.href = imgData;
@@ -1733,4 +1795,4 @@ window.sendResetEmail = (email) => {
 
 </script>
 </body>
-                       </html>
+                                                       </html>
