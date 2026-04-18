@@ -387,19 +387,35 @@
                        
                        <img id="render-logo" src="" crossorigin="anonymous" style="display:none; position: absolute; top: 0; right: 0; width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 2px solid var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 
-                        <h2 style="padding-left: 55px; padding-right: 55px; color: #b71c1c; font-weight: 900; font-size: 1.1em; text-transform: uppercase; margin-bottom: 5px; text-align: center; line-height: 1.2; text-shadow: 0px 0px 8px rgba(255,255,255,1), 0px 0px 3px rgba(255,255,255,0.9);"><span id="render-nombre"></span> #<span id="render-num"></span></h2>
+                                                <h2 style="padding-left: 55px; padding-right: 55px; color: #b71c1c; font-weight: 900; font-size: 0.9em; text-transform: uppercase; margin-bottom: 5px; text-align: center; line-height: 1.2; text-shadow: 0px 0px 8px rgba(255,255,255,1), 0px 0px 3px rgba(255,255,255,0.9);"><span id="render-nombre"></span> #<span id="render-num"></span></h2>
+
                        <div class="prize-info" style="padding: 5px; margin: 5px 0; font-size: 0.7em; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap;">
                 <span>🏆 Premios: <span id="render-pqty"></span></span>
                 <span>💰 Gana: <span id="render-pmonto"></span></span>
                 <span>🎟️ Precio: <span id="render-pprecio"></span></span>
             </div>
 
-            <p id="render-desc" style="font-size: 0.9em; color: #444; font-weight: 800; margin-top: 5px; text-shadow: 0px 0px 5px rgba(255,255,255,1);"></p>
+                    <p id="render-desc" style="font-size: 0.75em; color: #444; font-weight: 800; margin-top: 5px; text-shadow: 0px 0px 5px rgba(255,255,255,1);"></p>
+
             <p style="font-size: 0.75em; color: #111; margin-top: 2px; font-weight: bold; text-shadow: 0px 0px 5px rgba(255,255,255,1);">En base a: <strong style="color: var(--primary); text-transform: uppercase;"><span id="render-base"></span></strong></p>
 
         </div>
 
         <div class="grid-container" id="ticket-grid"></div>
+                               <div style="display: flex; flex-direction: column; align-items: center; margin-top: -15px; padding-bottom: 5px; font-size: 0.7em; font-weight: bold; text-shadow: 0px 0px 3px rgba(255,255,255,1);">
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 2px;">
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <div style="width: 8px; height: 8px; background-color: #2e7d32; border-radius: 2px;"></div>
+                    <span style="color: #2e7d32;">Pagado</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <div style="width: 8px; height: 8px; background-color: #f57c00; border-radius: 2px;"></div>
+                    <span style="color: #f57c00;">Apartado</span>
+                </div>
+            </div>
+            <div style="color: #444; font-size: 0.9em; text-transform: uppercase;">Número no pagado no participa</div>
+        </div>
+
     </div>
 
         <button class="btn btn-green" style="margin-top: 20px;" onclick="takeGridScreenshot()">📸 Descarga Plantilla</button>
@@ -559,7 +575,8 @@ if (urlParams.get('public') === 'true') {
             <div style="flex-grow: 1; display: flex; flex-direction: column; min-width: 0;">
                                
                                 <div style="background: #111; color: white; text-align: center; padding: 20px 15px; position: relative;">
-                    ${t.logo ? `<img src="${t.logo}" style="width: 45px; height: 45px; object-fit: contain; position: absolute; top: 15px; right: 15px; background: white; border-radius: 8px; padding: 2px;">` : ''}
+                    ${t.logo ? `<img src="${t.logo}" style="width: 45px; height: 45px; object-fit: contain; position: absolute; top: 15px; right: 15px;">` : ''}
+                   
                     <h4 style="color:var(--accent); font-size: 0.8em; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; padding: 0 45px;">${marca}</h4>
                     <h2 style="font-size: 1.65em; font-weight: 900; text-transform: uppercase; margin: 10px -5px 8px -5px; line-height: 1.05; word-break: break-word;">${t.nombre}</h2>
                     <p style="font-size: 0.85em; color: #ccc; display: flex; align-items: center; justify-content: center;">En base a: <strong style="color: white; text-transform: uppercase; margin-left: 5px;">${t.base}</strong> ${logoCabecera}</p>
@@ -571,12 +588,14 @@ if (urlParams.get('public') === 'true') {
                     <div style="position: absolute; right: -10px; width: 20px; height: 20px; background: ${borderColor}; border-radius: 50%;"></div>
                 </div>
 
-                <div style="padding: 15px 15px 25px 15px; text-align: center; background: white; position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); opacity: 0.08; pointer-events: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        ${t.logo ? `<img src="${t.logo}" style="width: 120px; height: 120px; object-fit: contain; margin-bottom: 10px; filter: grayscale(100%);">` : ''}
-                        <h1 style="font-size: 2.5em; color: #000; text-transform: uppercase; font-weight: 900; margin: 0; line-height: 1;">${t.base || ''}</h1>
+                               <div style="padding: 15px 15px 25px 15px; text-align: center; background: white; position: relative; overflow: hidden;">
+                                       <div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); opacity: 0.25; pointer-events: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
+
+                        ${t.logo ? `<img src="${t.logo}" style="width: 150px; height: 150px; object-fit: contain; margin-bottom: 10px;">` : ''}
+                        <h1 style="font-size: 3em; color: #000; text-transform: uppercase; font-weight: 900; margin: 0; line-height: 1;">${t.base || ''}</h1>
                     </div>
                     <div style="position: relative; z-index: 2;">
+
                         <p style="font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85em; margin-bottom: 5px;">BOLETO ASIGNADO</p>
                         <h1 style="font-size: ${numerosStr.length > 8 ? '2.5em' : '4em'}; font-weight: 900; color: #111; line-height: 1; margin: 0 0 10px 0; word-break: break-word;">${numerosStr}</h1>
                         <p style="font-size: 1.1em; color: #444; margin-bottom: 20px;">A nombre de: <strong style="color: #111; text-transform: uppercase; font-weight: 900;">${nombre}</strong></p>
@@ -1436,7 +1455,8 @@ window.generateDigitalTicket = async () => {
             
             <div style="flex-grow: 1; display: flex; flex-direction: column; min-width: 0;">
                                                              <div style="background: #111; color: white; text-align: center; padding: 20px 15px; position: relative;">
-                    ${t.logo ? `<img src="${t.logo}" style="width: 45px; height: 45px; object-fit: contain; position: absolute; top: 15px; right: 15px; background: white; border-radius: 8px; padding: 2px;">` : ''}
+                     ${t.logo ? `<img src="${t.logo}" style="width: 45px; height: 45px; object-fit: contain; position: absolute; top: 15px; right: 15px;">` : ''}
+                   
                     <h4 style="color:var(--accent); font-size: 0.8em; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; padding: 0 45px;">${marca}</h4>
                     <h2 style="font-size: 1.65em; font-weight: 900; text-transform: uppercase; margin: 10px -5px 8px -5px; line-height: 1.05; word-break: break-word;">${nombreSorteo}</h2>
                     <p style="font-size: 0.85em; color: #ccc; display: flex; align-items: center; justify-content: center;">En base a: <strong style="color: white; text-transform: uppercase; margin-left: 5px;">${t.base}</strong> ${logoCabecera}</p>
@@ -1448,12 +1468,14 @@ window.generateDigitalTicket = async () => {
                     <div style="position: absolute; right: -10px; width: 20px; height: 20px; background: ${borderColor}; border-radius: 50%;"></div>
                 </div>
 
-                <div style="padding: 15px 15px 25px 15px; text-align: center; background: white; position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.08; pointer-events: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        ${t.logo ? `<img src="${t.logo}" style="width: 120px; height: 120px; object-fit: contain; margin-bottom: 10px; filter: grayscale(100%);">` : ''}
-                        <h1 style="font-size: 2.5em; color: #000; text-transform: uppercase; font-weight: 900; margin: 0; line-height: 1;">${t.base || ''}</h1>
+                               <div style="padding: 15px 15px 25px 15px; text-align: center; background: white; position: relative; overflow: hidden;">
+                                       <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.25; pointer-events: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
+
+                        ${t.logo ? `<img src="${t.logo}" style="width: 150px; height: 150px; object-fit: contain; margin-bottom: 10px;">` : ''}
+                        <h1 style="font-size: 3em; color: #000; text-transform: uppercase; font-weight: 900; margin: 0; line-height: 1;">${t.base || ''}</h1>
                     </div>
                     <div style="position: relative; z-index: 2;">
+
                         <p style="font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85em; margin-bottom: 5px;">BOLETO ASIGNADO</p>
                         <h1 style="font-size: ${numerosStr.length > 8 ? '2.5em' : '4em'}; font-weight: 900; color: #111; line-height: 1; margin: 0 0 10px 0; word-break: break-word;">${numerosStr}</h1>
                         <p style="font-size: 1.1em; color: #444; margin-bottom: 20px;">A nombre de: <strong style="color: #111; text-transform: uppercase; font-weight: 900;">${nombre}</strong></p>
@@ -1529,22 +1551,35 @@ window.loadClientsFromTemplate = async (templateId) => {
     // Mostrar esqueletos de carga profesionales
     list.innerHTML = '<div class="skeleton sk-card" style="height: 80px;"></div><div class="skeleton sk-card" style="height: 80px;"></div><div class="skeleton sk-card" style="height: 80px;"></div>';
     
-    const snap = await get(ref(db, `templates/${auth.currentUser.uid}/${templateId}/tickets`));
-
-    const tickets = snap.val();
+    const snap = await get(ref(db, `templates/${auth.currentUser.uid}/${templateId}`));
+    const templateData = snap.val();
+    const tickets = templateData ? templateData.tickets : null;
     
     if(!tickets) return list.innerHTML = '<p style="text-align:center; color:#666; padding: 20px;">Aún no hay boletos apartados ni pagados en este sorteo.</p>';
     
-        list.innerHTML = '';
+     list.innerHTML = '';
     let totalAbonado = 0;
+    let faltaPorCobrar = 0;
+    let precioStr = templateData.precioBoleto || '0';
+    let precioBoleto = parseFloat(precioStr.replace(/[^0-9.]/g, '')) || 0;
     let htmlLista = '';
+    let boletosPagados = 0;
+    let boletosApartados = 0;
 
     for (const [num, data] of Object.entries(tickets)) {
-        const isPagado = data.estatus === 'pagado';
+               const isPagado = data.estatus === 'pagado';
         const statusColor = isPagado ? '#2e7d32' : '#f57c00';
         const abono = parseFloat(data.pago) || 0;
-        totalAbonado += abono;
         
+        if (isPagado) {
+            boletosPagados++;
+            totalAbonado += abono > 0 ? abono : precioBoleto;
+        } else {
+            boletosApartados++;
+            totalAbonado += abono;
+            faltaPorCobrar += (precioBoleto - abono > 0) ? (precioBoleto - abono) : 0;
+        }
+
         const waLink = data.whatsapp ? `<a href="https://wa.me/${data.whatsapp}" target="_blank" class="btn btn-outline" style="padding: 5px 10px; border-color:#25D366; color:#25D366; font-size:0.8em; text-decoration:none;"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:15px; vertical-align:middle; margin-right:5px;">Chat</a>` : '<span style="color:#999; font-size:0.8em;">Sin número</span>';
         const notaHTML = data.nota ? `<p style="font-size: 0.8em; color: #666; margin-top: 5px;">📝 ${data.nota}</p>` : '';
         const abonoHTML = abono > 0 ? `<p style="font-size: 0.85em; color: #111; font-weight: bold; margin-top: 5px;">Abono: $${abono}</p>` : '';
@@ -1563,16 +1598,23 @@ window.loadClientsFromTemplate = async (templateId) => {
     }
 
     list.innerHTML = `
-        <div style="background: var(--primary); color: var(--accent); padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
-            <h4 style="margin-bottom: 5px; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px;">Recaudación Registrada</h4>
-            <h2 style="font-size: 2em; margin: 0;">$${totalAbonado.toFixed(2)}</h2>
-            <p style="font-size: 0.8em; color: #ccc; margin-top: 5px;">* Calculado según los abonos escritos manualmente</p>
-        </div>
-    ` + htmlLista;
-
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <div style="background: var(--primary); color: #2e7d32; padding: 15px; border-radius: 10px; flex: 1; text-align: center; border: 1px solid #2e7d32;">
+                <h4 style="margin-bottom: 5px; text-transform: uppercase; font-size: 0.75em; letter-spacing: 1px; color: white;">Recaudación</h4>
+                <h2 style="font-size: 1.5em; margin: 0;">$${totalAbonado.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h2>
+                <p style="font-size: 0.75em; color: #aaa; margin-top: 5px; font-weight: 600;">${boletosPagados} Pagados</p>
+            </div>
+                           <div style="background: var(--primary); color: #f57c00; padding: 15px; border-radius: 10px; flex: 1; text-align: center; border: 1px solid #f57c00;">
+                    <h4 style="margin-bottom: 5px; text-transform: uppercase; font-size: 0.75em; letter-spacing: 1px; color: white;">Falta por cobrar</h4>
+                    <h2 style="font-size: 1.5em; margin: 0;">$${faltaPorCobrar.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</h2>
+                    <p style="font-size: 0.75em; color: #aaa; margin-top: 5px; font-weight: 600;">${boletosApartados} Apartados</p>
+                </div>
+            </div>
+        ` + htmlLista;
 };
 
 window.copyAvailableNumbers = () => {
+
     let disponibles = [];
     
     // Extraer los números leyendo las celdas directamente
@@ -1795,4 +1837,4 @@ window.sendResetEmail = (email) => {
 
 </script>
 </body>
-                                                       </html>
+   </html>
