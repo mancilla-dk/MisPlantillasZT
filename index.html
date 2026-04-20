@@ -227,7 +227,10 @@
             <option value="loterias">Ver Calendario y Sorteos en Vivo</option>
                                              <option value="perfil">Mi Perfil y WhatsApp de Ventas</option>
             <option value="proveedor">Contactar a mi Proveedor</option>
-            <option value="grupos">Grupos para publicar</option>
+                      <option value="grupos">Grupos para publicar</option>
+            <option value="ventalibre">Generar Venta Libre</option>
+            <option value="gridlibre">Ver Cuadrícula de Ventas Libres</option>
+            <option value="fondos">💰 Fondos Recaudados</option>
             <option value="salir" style="color: red;">Cerrar Sesión</option>
 
         </select>
@@ -328,10 +331,11 @@
             <input type="text" id="user-wa-num" placeholder="Ej: 5215551234567">
         </div>
 
-        <div class="form-group">
-            <label>Página de Facebook o Link (Opcional)</label>
-            <input type="text" id="user-fb" placeholder="Link de tu grupo o perfil">
+             <div class="form-group">
+            <label>Página de WhatsApp o Link (Opcional)</label>
+            <input type="text" id="user-fb" placeholder="Link de tu grupo de WhatsApp">
         </div>
+
         <div class="form-group">
             <label>Mensaje Predeterminado (Etiquetas: [NUMERO], [CLIENTE], [SORTEO])</label>
             <textarea id="user-msg" rows="3" placeholder="¡Felicidades [CLIENTE]! Tu boleto [NUMERO] para [SORTEO] está confirmado. Descarga tu boleto aquí."></textarea>
@@ -347,9 +351,9 @@
             <a href="#" id="wa-admin-link" target="_blank" class="btn btn-green" style="display: inline-block; text-decoration: none; padding: 12px 25px; font-size: 0.9em;"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:18px; vertical-align:middle; margin-right:8px; filter: brightness(0) invert(1);">Enviar Mensaje al Administrador</a>
         </div>
     </div>
-    <div id="user-grupos" style="display:none;">
+        <div id="user-grupos" style="display:none;">
         <h3 style="margin-bottom: 15px; color: var(--primary);">Panel de publicaciones</h3>
-        <p style="font-size: 0.85em; color: #666; margin-bottom: 20px;">Control de Grupos de Facebook.</p>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 20px;">Control de Grupos de WhatsApp.</p>
         
         <div class="alert-duplicate" id="alertaDuplicado">
             ⚠️ Este enlace ya está en tu lista.
@@ -357,8 +361,9 @@
 
         <div class="form-row" style="margin-bottom: 20px; align-items: center;">
             <div class="form-group" style="margin-bottom: 0; flex: 3;">
-                <input type="url" id="inputUrl" placeholder="Pega el enlace de Facebook aquí..." required style="width: 100%;">
+                <input type="url" id="inputUrl" placeholder="Pega el enlace de WhatsApp aquí..." required style="width: 100%;">
             </div>
+
             <div class="form-group" style="margin-bottom: 0; flex: 1;">
                 <button class="btn btn-add" style="margin-top: 0; background-color: var(--primary);" onclick="agregarEnlaceGrupo()">Agregar</button>
             </div>
@@ -366,6 +371,126 @@
 
         <ul class="link-list" id="listaEnlaces" style="list-style: none; display: flex; flex-direction: column; gap: 15px; padding: 0;">
         </ul>
+    </div>
+        <div id="user-ventalibre" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Venta Libre de Boletos</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 20px;">Genera boletos rápidos individuales.</p>
+               <div class="form-row">
+            <div class="form-group"><label>Nombre del Cliente</label><input type="text" id="vl-nombre" placeholder="Ej: Juan Pérez"></div>
+            <div class="form-group"><label>WhatsApp (Opcional)</label><input type="text" id="vl-whatsapp" placeholder="Ej: 5215551234567"></div>
+        </div>
+        <div class="form-group"><label>Números Vendidos</label><input type="text" id="vl-numeros" placeholder="Ej: 15, 23, 99"></div>
+        <div class="form-row">
+            <div class="form-group"><label>Título o Tipo de Sorteo</label><input type="text" id="vl-sorteo" placeholder="Ej: Tu suerte suma"></div>
+            <div class="form-group"><label>En base a</label>
+                <select id="vl-base">
+                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Entre amigos</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Cifras del Juego</label>
+                <select id="vl-cifras">
+                    <option value="2">2 Cifras</option><option value="3">3 Cifras</option><option value="4">4 Cifras</option><option value="5">5 Cifras</option><option value="6">6 Cifras</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Estatus</label>
+                <select id="vl-estatus"><option value="pagado">Pagado</option><option value="apartado">Apartado</option></select>
+            </div>
+            <div class="form-group"><label>Costo Total ($)</label><input type="number" id="vl-costo" placeholder="Ej: 10"></div>
+        </div>
+        <div class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eaeaea;">
+            <label>Subir Logo del Boleto</label>
+            <input type="file" id="vl-logo" accept="image/*" style="padding: 10px; border: 2px dashed var(--accent); background: #fffcf5; width: 100%; border-radius: 8px; cursor: pointer;" onchange="if(this.files[0]){ document.getElementById('vl-logo-preview-box').style.display='flex'; document.getElementById('vl-logo-preview-img').src=URL.createObjectURL(this.files[0]); } else { document.getElementById('vl-logo-preview-box').style.display='none'; }">
+            <div id="vl-logo-preview-box" style="display:none; margin-top:15px; align-items:center; gap: 15px; padding: 15px; background: white; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <img id="vl-logo-preview-img" src="" style="width: 60px; height: 60px; border-radius: 10px; border: 2px solid var(--accent); object-fit: cover;">
+                <div style="flex-grow: 1; text-align: left;">
+                    <span style="display:block; font-size:0.9em; color:#2e7d32; font-weight:bold;">Vista previa lista</span>
+                </div>
+            </div>
+            <p style="font-size: 0.75em; color: #d81b60; margin-top: 8px; font-weight: bold;">💡 TIP: Si dejas esto vacío, el sistema reutilizará automáticamente el último logo que subiste.</p>
+        </div>
+        
+        <button class="btn btn-green" id="btnGenerarLibre" onclick="generarBoletoLibre()">Generar venta libre</button>
+    </div>
+
+       <div id="user-gridlibre" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Registro de Ventas Libres</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 20px;">Aquí se dibujan todos los números que has generado en modalidad de Venta Libre.</p>
+        
+        <button class="btn btn-outline" style="border-color: #dc2626; color: #dc2626; margin-bottom: 15px; padding: 10px;" onclick="borrarHistorialVentasLibres()">🗑 Borrar Cuadrícula y Empezar de Nuevo</button>
+
+        <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; font-size: 0.7em; font-weight: bold;">
+
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background-color: #2e7d32; border-radius: 2px;"></div><span style="color: #2e7d32;">Pagado</span></div>
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background-color: #f57c00; border-radius: 2px;"></div><span style="color: #f57c00;">Apartado</span></div>
+            </div>
+        </div>
+
+        <div id="vl-grid-render" class="grid-container" style="grid-template-columns: repeat(5, 1fr); width: 100%;"></div>
+    </div>
+    <div id="user-fondos" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Fondos Recaudados</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 20px;">Resumen financiero de tus ganancias (Solo se suma lo que está en estatus Pagado o lo que tiene Abono).</p>
+        
+        <div style="background: var(--accent); color: var(--primary); padding: 25px 20px; border-radius: 12px; text-align: center; margin-bottom: 15px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <p style="text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px;">Ingreso Total Histórico</p>
+            <h1 style="font-size: 2.8em; margin: 5px 0;">$<span id="fondo-total">0.00</span></h1>
+        </div>
+
+        <div style="background: #2e7d32; color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <p style="text-transform: uppercase; font-size: 0.75em; letter-spacing: 1px;">Recaudado esta semana (Últimos 7 días)</p>
+            <h2 style="font-size: 2em; margin: 5px 0;">$<span id="fondo-semana">0.00</span></h2>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <div style="background: white; border: 1px solid #eaeaea; padding: 15px; border-radius: 10px; flex: 1; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <p style="color: #666; font-size: 0.75em; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Plantillas Regulares</p>
+                <h3 style="color: #1565c0; margin: 0;">$<span id="fondo-plantillas">0.00</span></h3>
+            </div>
+            <div style="background: white; border: 1px solid #eaeaea; padding: 15px; border-radius: 10px; flex: 1; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <p style="color: #666; font-size: 0.75em; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Ventas Libres</p>
+                <h3 style="color: #d81b60; margin: 0;">$<span id="fondo-libres">0.00</span></h3>
+            </div>
+        </div>
+    </div>
+
+    <div id="user-ventalibre" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Venta Libre de Boletos</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 20px;">Genera boletos rápidos individuales sin necesidad de crear una plantilla completa.</p>
+        <div class="form-row">
+            <div class="form-group"><label>Nombre del Cliente</label><input type="text" id="vl-nombre" placeholder="Ej: Juan Pérez"></div>
+            <div class="form-group"><label>Números Vendidos</label><input type="text" id="vl-numeros" placeholder="Ej: 15, 23, 99"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Título o Tipo de Sorteo</label><input type="text" id="vl-sorteo" placeholder="Ej: Tris Extra Rifa Libre"></div>
+            <div class="form-group"><label>En base a</label>
+                <select id="vl-base">
+                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Entre amigos</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Estatus</label>
+                <select id="vl-estatus"><option value="pagado">Pagado</option><option value="apartado">Apartado</option></select>
+            </div>
+            <div class="form-group"><label>Costo Total ($)</label><input type="number" id="vl-costo" placeholder="Ej: 50"></div>
+        </div>
+        <div class="form-group">
+            <label>Subir Logo del Boleto</label>
+            <input type="file" id="vl-logo" accept="image/*" style="padding: 10px; border: 2px dashed var(--accent); background: #fffcf5; width: 100%; border-radius: 8px;">
+        </div>
+        
+        <button class="btn btn-green" id="btnGenerarLibre" onclick="generarBoletoLibre()">Subir Logo y Crear Boleto</button>
+
+        <div id="vl-preview" style="margin-top: 20px; display: none; flex-direction: column; align-items: center; border: 2px solid var(--accent); padding: 15px; border-radius: 10px; background: white;">
+            <img id="vl-preview-logo" src="" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; border: 2px solid var(--accent); display:none;">
+            <p style="font-size: 0.8em; font-weight: bold; color: #555; text-transform: uppercase;">Números en el boleto</p>
+            <div style="background: #111; color: white; padding: 10px 20px; border-radius: 8px; font-size: 1.5em; font-weight: 900; letter-spacing: 2px; margin-top: 5px;">
+                <span id="vl-preview-numeros"></span>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -623,6 +748,87 @@ if (urlParams.get('public') === 'true') {
         alert("Ocurrió un error al cargar el boleto.");
     });
 }
+else if (urlParams.get('vl') === 'true') {
+    isPublicRoute = true;
+    document.getElementById('loading-screen').style.display = 'flex';
+    document.getElementById('loading-text').innerText = "Cargando boleto...";
+    const p_uid = urlParams.get('uid');
+    const p_key = urlParams.get('key');
+    
+    Promise.all([
+        get(ref(db, `ventas_libres/${p_uid}/${p_key}`)),
+        get(ref(db, `users/${p_uid}/perfil`))
+    ]).then(async ([snapV, snapP]) => {
+        if (!snapV.exists()) {
+            alert("Boleto no encontrado.");
+            return;
+        }
+        const venta = snapV.val();
+        const perfil = snapP.val() || {};
+        const marca = perfil.marca || "ZONATECNO PREMIA";
+        
+        document.getElementById('loading-screen').style.display = 'none';
+        const dtRender = document.getElementById('digital-ticket-render');
+        dtRender.style.display = 'flex';
+        dtRender.style.background = 'white';
+        
+        const fecha = venta.fecha || new Date().toLocaleDateString('es-MX');
+        const colorEstatus = venta.estatus === 'pagado' ? '#2e7d32' : '#f57c00';
+        let borderColor = "#111111";
+        let textoBorde = venta.base ? venta.base.toUpperCase() : "SORTEO";
+        let logoCabecera = "";
+        let logoBorde = "";
+        
+        const snapSet = await get(ref(db, 'settings'));
+        const settings = snapSet.val() || {};
+
+        if (venta.base === "Lotería Nacional") {
+            borderColor = "#b71c1c";
+            if (settings.logo_loteria) {
+                logoCabecera = `<img src="${settings.logo_loteria}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
+                logoBorde = `<img src="${settings.logo_loteria}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
+            }
+        } else if (venta.base === "Tris Clásico") {
+            borderColor = "#d81b60";
+            if (settings.logo_tris) {
+                logoCabecera = `<img src="${settings.logo_tris}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
+                logoBorde = `<img src="${settings.logo_tris}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
+            }
+        }
+        
+        const imgUrl = venta.logo || "";
+
+        dtRender.innerHTML = `
+            <div style="display: flex; width: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); background: white;">
+                <div style="width: 26px; min-width: 26px; background-color: ${borderColor}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 0; color: white; font-size: 0.65em; font-weight: bold; writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: 2px;">
+                    <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">${logoBorde}<span>${textoBorde}</span>${logoBorde}<span>${textoBorde}</span></div>
+                </div>
+                <div style="flex-grow: 1; display: flex; flex-direction: column; min-width: 0;">
+                    <div style="background: #111; color: white; text-align: center; padding: 20px 15px; position: relative;">
+                        ${imgUrl ? `<img src="${imgUrl}" style="width: 45px; height: 45px; object-fit: contain; position: absolute; top: 15px; right: 15px; border-radius: 8px;">` : ''}
+                        <h4 style="color:var(--accent); font-size: 0.8em; text-transform: uppercase; font-weight: 800; margin-bottom: 10px;">${marca}</h4>
+                        <h2 style="font-size: 1.65em; font-weight: 900; text-transform: uppercase; margin: 10px -5px 8px -5px;">${venta.sorteo}</h2>
+                        <p style="font-size: 0.85em; color: #ccc;">En base a: <strong style="color: white; text-transform: uppercase;">${venta.base}</strong> ${logoCabecera}</p>
+                    </div>
+                    <div style="padding: 15px 15px 25px 15px; text-align: center; background: white; position: relative;">
+                        <p style="font-weight: 800; color: #666; text-transform: uppercase; font-size: 0.85em; margin-bottom: 5px;">BOLETO VENTA LIBRE</p>
+                        <h1 style="font-size: ${venta.numeros.length > 8 ? '2.5em' : '4em'}; font-weight: 900; color: #111; line-height: 1; margin: 0 0 10px 0; word-break: break-word;">${venta.numeros}</h1>
+                        <p style="font-size: 1.1em; color: #444; margin-bottom: 20px;">A nombre de: <strong style="color: #111; text-transform: uppercase; font-weight: 900;">${venta.nombre}</strong></p>
+                        <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #eaeaea; margin-bottom: 20px;">
+                            <strong style="color: #111; font-size: 0.9em;">Fecha de compra:</strong> <span style="font-size: 0.85em; color: #555;">${fecha}</span>
+                        </div>
+                        <div style="background: ${colorEstatus}; color: white; padding: 15px; border-radius: 10px; font-weight: 900; font-size: 1.2em; text-transform: uppercase;">
+                            ESTATUS: ${venta.estatus}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        
+        document.getElementById('modal-digital').style.display = 'flex';
+        document.querySelector('#modal-digital .close-modal').style.display = 'none';
+    }).catch(err => { alert("Error al cargar."); });
+}
+
 const ADMIN_EMAIL = "zonatecno@admin.com";
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload";
 const UPLOAD_PRESET = "RifasExpress"; 
@@ -686,6 +892,16 @@ window.switchUserTab = async (tab) => {
         document.getElementById('user-perfil').style.display = (tab === 'perfil') ? 'block' : 'none';
     document.getElementById('user-proveedor').style.display = (tab === 'proveedor') ? 'block' : 'none';
     document.getElementById('user-grupos').style.display = (tab === 'grupos') ? 'block' : 'none';
+    if(document.getElementById('user-ventalibre')) document.getElementById('user-ventalibre').style.display = (tab === 'ventalibre') ? 'block' : 'none';
+    if(document.getElementById('user-gridlibre')) {
+        document.getElementById('user-gridlibre').style.display = (tab === 'gridlibre') ? 'block' : 'none';
+        if(tab === 'gridlibre') window.cargarHistorialVL();
+    }
+       if(document.getElementById('user-fondos')) {
+        document.getElementById('user-fondos').style.display = (tab === 'fondos') ? 'block' : 'none';
+        if(tab === 'fondos') window.calcularFondos();
+    }
+ if(document.getElementById('user-ventalibre')) document.getElementById('user-ventalibre').style.display = (tab === 'ventalibre') ? 'block' : 'none';
 
     if(tab === 'perfil') {
 
@@ -1294,12 +1510,14 @@ window.openTicketModal = (num, data) => {
     document.getElementById('m-nombre').value = data ? data.nombre : '';
     document.getElementById('m-whatsapp').value = data ? (data.whatsapp || '') : '';
     document.getElementById('m-estatus').value = data ? data.estatus : 'apartado';
-    document.getElementById('m-pago').value = data ? (data.pago || '') : '';
+    
+    let precioPlantilla = document.getElementById('render-pprecio') ? document.getElementById('render-pprecio').innerText.replace(/[^0-9.]/g, '') : '';
+    document.getElementById('m-pago').value = data && data.pago ? data.pago : precioPlantilla;
+    
     document.getElementById('m-nota').value = data ? (data.nota || '') : '';
     
     document.getElementById('modal-ticket').style.display = 'flex';
 };
-
 
 window.saveTicketData = async () => {
     const nombre = document.getElementById('m-nombre').value;
@@ -1363,18 +1581,15 @@ window.saveTicketData = async () => {
     msj += `\n\nEstatus: *${estatus.toUpperCase()}*\n👉 *Compra más boletos:* https://wa.me/${waVendedor}\n📲 *Síguenos en FB:* ${fbEnlace}\n\n🎟️ *Descarga tu boleto digital aquí:* ${linkBoleto}`;
 
 
-    navigator.clipboard.writeText(msj).then(() => {
-
         Swal.fire({
-            title: '¡Éxito!',
-            html: `<p style="font-size:0.9em; margin-bottom: 20px;">Boleto guardado. El mensaje fue copiado al portapapeles.</p>
-                   <button onclick="navigator.clipboard.writeText(decodeURIComponent('${encodeURIComponent(msj)}')); Swal.fire('¡Copiado!', 'Mensaje copiado al portapapeles', 'success');" style="background:#25D366; color:white; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:800; font-size:1.1em; box-shadow: 0 4px 10px rgba(37,211,102,0.3); width:100%; margin-bottom:15px;">💬 Copiar mensaje de felicitaciones</button>
-                   <button onclick="generateDigitalTicket(); Swal.close();" style="background:#007bff; color:white; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:800; font-size:1.1em; box-shadow: 0 4px 10px rgba(0,123,255,0.3); width:100%;">📥 Descarga el boleto digital para tu cliente</button>`,
-            icon: 'success',
-            showConfirmButton: true,
-            confirmButtonText: 'Cerrar',
-            confirmButtonColor: '#111'
-        });
+        title: '¡Éxito!',
+        html: `<p style="font-size:0.9em; margin-bottom: 20px;">Boleto guardado en el sistema.</p>
+               <button onclick="navigator.clipboard.writeText(decodeURIComponent('${encodeURIComponent(msj)}')); Swal.fire('¡Copiado!', 'Mensaje copiado al portapapeles', 'success');" style="background:#25D366; color:white; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:800; font-size:1.1em; box-shadow: 0 4px 10px rgba(37,211,102,0.3); width:100%; margin-bottom:15px;">💬 Copiar mensaje de WhatsApp</button>
+               <button onclick="generateDigitalTicket(); Swal.close();" style="background:#007bff; color:white; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:800; font-size:1.1em; box-shadow: 0 4px 10px rgba(0,123,255,0.3); width:100%;">📥 Descarga el boleto digital para tu cliente</button>`,
+        icon: 'success',
+        showConfirmButton: true,
+        confirmButtonText: 'Cerrar',
+        confirmButtonColor: '#111'
     });
 
 };
@@ -1571,14 +1786,14 @@ window.loadClientsFromTemplate = async (templateId) => {
         const statusColor = isPagado ? '#2e7d32' : '#f57c00';
         const abono = parseFloat(data.pago) || 0;
         
-        if (isPagado) {
+               if (isPagado) {
             boletosPagados++;
             totalAbonado += abono > 0 ? abono : precioBoleto;
         } else {
             boletosApartados++;
-            totalAbonado += abono;
             faltaPorCobrar += (precioBoleto - abono > 0) ? (precioBoleto - abono) : 0;
         }
+
 
         const waLink = data.whatsapp ? `<a href="https://wa.me/${data.whatsapp}" target="_blank" class="btn btn-outline" style="padding: 5px 10px; border-color:#25D366; color:#25D366; font-size:0.8em; text-decoration:none;"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:15px; vertical-align:middle; margin-right:5px;">Chat</a>` : '<span style="color:#999; font-size:0.8em;">Sin número</span>';
         const notaHTML = data.nota ? `<p style="font-size: 0.8em; color: #666; margin-top: 5px;">📝 ${data.nota}</p>` : '';
@@ -1833,6 +2048,492 @@ window.sendResetEmail = (email) => {
     }).catch((error) => {
         Swal.fire('Error', 'No se pudo enviar el correo de recuperación.', 'error');
     });
+};
+window.generarBoletoLibre = async () => {
+    const btn = document.getElementById('btnGenerarLibre');
+    const nombre = document.getElementById('vl-nombre').value;
+    const numerosStr = document.getElementById('vl-numeros').value;
+    const sorteoNombre = document.getElementById('vl-sorteo').value;
+    const base = document.getElementById('vl-base').value;
+    const estatus = document.getElementById('vl-estatus').value;
+    
+    if(!nombre || !numerosStr || !sorteoNombre) return Swal.fire('Faltan datos', 'Ingresa al menos el nombre, los números y el título del sorteo.', 'warning');
+    
+    btn.innerText = "Subiendo logo y generando..."; btn.disabled = true;
+    
+    let imgUrl = "";
+    const file = document.getElementById('vl-logo').files[0];
+    if(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET);
+        try {
+            const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+            const json = await resp.json();
+            if (json.secure_url) imgUrl = json.secure_url;
+        } catch(e) { console.error("Error subiendo logo", e); }
+    }
+
+    // Dibuja el recuadro de previsualización en la pantalla actual
+    document.getElementById('vl-preview').style.display = 'flex';
+    document.getElementById('vl-preview-numeros').innerText = numerosStr;
+    if(imgUrl) {
+        document.getElementById('vl-preview-logo').src = imgUrl;
+        document.getElementById('vl-preview-logo').style.display = 'inline-block';
+    }
+
+    // Configura el render del Boleto Digital Modal
+    const dtRender = document.getElementById('digital-ticket-render');
+    dtRender.style.display = 'flex';
+    dtRender.style.background = 'white';
+    const fecha = new Date().toLocaleDateString('es-MX');
+    const colorEstatus = estatus === 'pagado' ? '#2e7d32' : '#f57c00';
+    let borderColor = base === "Lotería Nacional" ? "#b71c1c" : (base === "Tris Clásico" ? "#d81b60" : "#111");
+
+    const marca = document.getElementById('user-marca') ? (document.getElementById('user-marca').value || "ZONATECNO PREMIA") : "ZONATECNO PREMIA";
+
+    dtRender.innerHTML = `
+        <div style="display: flex; width: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); background: white;">
+            <div style="width: 26px; min-width: 26px; background-color: ${borderColor};"></div>
+            <div style="flex-grow: 1; display: flex; flex-direction: column; min-width: 0;">
+                <div style="background: #111; color: white; text-align: center; padding: 20px 15px; position: relative;">
+                    ${imgUrl ? `<img src="${imgUrl}" style="width: 45px; height: 45px; object-fit: contain; position: absolute; top: 15px; right: 15px; border-radius: 5px;">` : ''}
+                    <h4 style="color:var(--accent); font-size: 0.8em; text-transform: uppercase; margin-bottom: 10px;">${marca}</h4>
+                    <h2 style="font-size: 1.65em; font-weight: 900; text-transform: uppercase; margin: 10px -5px 8px -5px;">${sorteoNombre}</h2>
+                    <p style="font-size: 0.85em; color: #ccc;">En base a: <strong style="color: white; text-transform: uppercase;">${base}</strong></p>
+                </div>
+                <div style="padding: 15px 15px 25px 15px; text-align: center; background: white; position: relative;">
+                    <p style="font-weight: 800; color: #666; text-transform: uppercase; font-size: 0.85em; margin-bottom: 5px;">BOLETO VENTA LIBRE</p>
+                    <h1 style="font-size: 2.5em; font-weight: 900; color: #111; margin: 0 0 10px 0;">${numerosStr}</h1>
+                    <p style="font-size: 1.1em; color: #444; margin-bottom: 20px;">A nombre de: <strong style="color: #111; text-transform: uppercase;">${nombre}</strong></p>
+                    <div style="background: ${colorEstatus}; color: white; padding: 15px; border-radius: 10px; font-weight: 900; font-size: 1.2em; text-transform: uppercase; margin-bottom: 10px;">
+                        ESTATUS: ${estatus}
+                    </div>
+                    <p style="font-size: 0.85em; color: #666;"><strong>Fecha:</strong> ${fecha}</p>
+                </div>
+            </div>
+            <div style="width: 26px; min-width: 26px; background-color: ${borderColor};"></div>
+        </div>
+    `;
+
+    // Arma el mensaje predeterminado
+      let msgTemplate = document.getElementById('user-msg') ? document.getElementById('user-msg').value : "🎉 ¡Felicidades [CLIENTE]! 🎉\\nTu boleto [NUMERO] para [SORTEO] está confirmado.";
+    let msj = msgTemplate.replace(/\[CLIENTE\]/g, nombre).replace(/\[NUMERO\]/g, numerosStr).replace(/\[SORTEO\]/g, sorteoNombre);
+    
+    const keyVenta = nuevaVentaRef.key;
+    const linkBoletoNuevoVL = `${window.location.origin}${window.location.pathname}?vl=true&uid=${auth.currentUser.uid}&key=${keyVenta}`;
+    
+    msj += `\\n\\nCifras: *${cifras}*\\nEstatus: *${estatus.toUpperCase()}*\\n\\n🎟️ *Descarga tu boleto digital aquí:* ${linkBoletoNuevoVL}`;
+
+    btn.innerText = "Generar venta libre"; btn.disabled = false;
+
+    // Lanza la alerta con los botones de copiado y descarga
+    Swal.fire({
+        title: '¡Boleto Creado!',
+        html: '<p style="font-size:0.9em; margin-bottom: 20px;">Boleto generado correctamente.</p>' +
+              '<button onclick="navigator.clipboard.writeText(decodeURIComponent(\'' + encodeURIComponent(msj) + '\')); Swal.fire(\'¡Copiado!\', \'Mensaje copiado al portapapeles\', \'success\');" style="background:#25D366; color:white; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:800; font-size:1.1em; box-shadow: 0 4px 10px rgba(37,211,102,0.3); width:100%; margin-bottom:15px;">💬 Copiar mensaje de WhatsApp</button>' +
+              '<button onclick="document.getElementById(\'modal-digital\').style.display = \'flex\'; Swal.close();" style="background:#007bff; color:white; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:800; font-size:1.1em; box-shadow: 0 4px 10px rgba(0,123,255,0.3); width:100%;">📥 Ver y Descargar Boleto Digital</button>',
+        icon: 'success',
+        showConfirmButton: true,
+        confirmButtonText: 'Cerrar',
+        confirmButtonColor: '#111'
+    });
+};
+window.logoVentaLibreGuardado = ""; // Memoria para el logo
+
+window.generarBoletoLibre = async () => {
+    const btn = document.getElementById('btnGenerarLibre');
+    const nombre = document.getElementById('vl-nombre').value;
+    const whatsapp = document.getElementById('vl-whatsapp').value;
+    const numerosStr = document.getElementById('vl-numeros').value;
+    const sorteoNombre = document.getElementById('vl-sorteo').value;
+    const base = document.getElementById('vl-base').value;
+    const estatus = document.getElementById('vl-estatus').value;
+    const cifras = document.getElementById('vl-cifras').value;
+    const costo = document.getElementById('vl-costo').value;
+    
+    if(!nombre || !numerosStr || !sorteoNombre) return Swal.fire('Faltan datos', 'Ingresa al menos el nombre, los números y el título.', 'warning');
+    
+    btn.innerText = "Procesando..."; btn.disabled = true;
+    
+    let imgUrl = window.logoVentaLibreGuardado;
+    const file = document.getElementById('vl-logo').files[0];
+    
+    if(file) {
+        btn.innerText = "Subiendo logo nuevo...";
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET); 
+        try {
+            const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+            const json = await resp.json();
+            if (json.secure_url) {
+                imgUrl = json.secure_url;
+                window.logoVentaLibreGuardado = imgUrl; 
+            }
+        } catch(e) { console.error("Error subiendo logo", e); }
+    }
+
+    const nuevaVentaRef = push(ref(db, 'ventas_libres/' + auth.currentUser.uid));
+    await set(nuevaVentaRef, {
+        nombre: nombre,
+        whatsapp: whatsapp,
+        numeros: numerosStr,
+        sorteo: sorteoNombre,
+        base: base,
+        estatus: estatus,
+        cifras: cifras,
+        costo: costo,
+        logo: imgUrl,
+        fecha: new Date().toLocaleDateString('es-MX'),
+        timestamp: Date.now()
+    });
+
+    const dtRender = document.getElementById('digital-ticket-render');
+    dtRender.style.display = 'flex';
+    dtRender.style.background = 'white';
+    const fecha = new Date().toLocaleDateString('es-MX');
+    const colorEstatus = estatus === 'pagado' ? '#2e7d32' : '#f57c00';
+    
+    let borderColor = "#111111";
+    let textoBorde = base ? base.toUpperCase() : "SORTEO";
+    let logoCabecera = "";
+    let logoBorde = "";
+    
+    const snapSet = await get(ref(db, 'settings'));
+    const settings = snapSet.val() || {};
+
+    if (base === "Lotería Nacional") { 
+        borderColor = "#b71c1c"; 
+        if(settings.logo_loteria) {
+            logoCabecera = `<img src="${settings.logo_loteria}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
+            logoBorde = `<img src="${settings.logo_loteria}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
+        }
+    } else if (base === "Tris Clásico") { 
+        borderColor = "#d81b60"; 
+        if(settings.logo_tris) {
+            logoCabecera = `<img src="${settings.logo_tris}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
+            logoBorde = `<img src="${settings.logo_tris}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
+        }
+    }
+    const marca = document.getElementById('user-marca') ? (document.getElementById('user-marca').value || "ZONATECNO PREMIA") : "ZONATECNO PREMIA";
+
+    dtRender.innerHTML = `
+        <div style="display: flex; width: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); background: white;">
+            <div style="width: 26px; min-width: 26px; background-color: ${borderColor}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 0; color: white; font-size: 0.65em; font-weight: bold; writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: 2px; border-right: 2px dashed rgba(255,255,255,0.4);">
+                <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">${logoBorde}<span>${textoBorde}</span>${logoBorde}<span>${textoBorde}</span>${logoBorde}<span>${textoBorde}</span></div>
+            </div>
+            
+            <div style="flex-grow: 1; display: flex; flex-direction: column; min-width: 0;">
+                <div style="background: #111; color: white; text-align: center; padding: 20px 15px; position: relative;">
+                    ${imgUrl ? `<img src="${imgUrl}" style="width: 45px; height: 45px; object-fit: contain; position: absolute; top: 15px; right: 15px; background: white; border-radius: 8px;">` : ''}
+                    <h4 style="color:var(--accent); font-size: 0.8em; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; padding: 0 45px;">${marca}</h4>
+                    <h2 style="font-size: 1.65em; font-weight: 900; text-transform: uppercase; margin: 10px -5px 8px -5px; line-height: 1.05; word-break: break-word;">${sorteoNombre}</h2>
+                    <p style="font-size: 0.85em; color: #ccc; display: flex; align-items: center; justify-content: center;">En base a: <strong style="color: white; text-transform: uppercase; margin-left: 5px;">${base}</strong> ${logoCabecera}</p>
+                </div>
+
+                <div style="height: 20px; background: white; position: relative; display: flex; align-items: center; justify-content: center;">
+                    <div style="position: absolute; left: -10px; width: 20px; height: 20px; background: ${borderColor}; border-radius: 50%;"></div>
+                    <div style="border-top: 2px dashed #ddd; width: 90%;"></div>
+                    <div style="position: absolute; right: -10px; width: 20px; height: 20px; background: ${borderColor}; border-radius: 50%;"></div>
+                </div>
+
+                <div style="padding: 15px 15px 25px 15px; text-align: center; background: white; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.25; pointer-events: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
+                        ${imgUrl ? `<img src="${imgUrl}" style="width: 150px; height: 150px; object-fit: contain; margin-bottom: 10px;">` : ''}
+                        <h1 style="font-size: 3em; color: #000; text-transform: uppercase; font-weight: 900; margin: 0; line-height: 1;">${base || ''}</h1>
+                    </div>
+                    <div style="position: relative; z-index: 2;">
+                        <p style="font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85em; margin-bottom: 5px;">BOLETO VENTA LIBRE</p>
+                        <h1 style="font-size: ${numerosStr.length > 8 ? '2.5em' : '4em'}; font-weight: 900; color: #111; line-height: 1; margin: 0 0 10px 0; word-break: break-word;">${numerosStr}</h1>
+                        <p style="font-size: 1.1em; color: #444; margin-bottom: 20px;">A nombre de: <strong style="color: #111; text-transform: uppercase; font-weight: 900;">${nombre}</strong></p>
+                        <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #eaeaea; margin-bottom: 20px;">
+                            <strong style="color: #111; font-size: 0.9em;">Fecha de compra:</strong> <span style="font-size: 0.85em; color: #555;">${fecha}</span>
+                        </div>
+                        <div style="background: ${colorEstatus}; color: white; padding: 15px; border-radius: 10px; font-weight: 900; font-size: 1.2em; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            ESTATUS: ${estatus}
+                        </div>
+                        <p style="font-size: 0.75em; color: #999; margin-top: 15px;">Juego de ${cifras} Cifras • ¡Mucha Suerte!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="width: 26px; min-width: 26px; background-color: ${borderColor}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 0; color: white; font-size: 0.65em; font-weight: bold; writing-mode: vertical-rl; letter-spacing: 2px; border-left: 2px dashed rgba(255,255,255,0.4);">
+                <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">${logoBorde}<span>${textoBorde}</span>${logoBorde}<span>${textoBorde}</span>${logoBorde}<span>${textoBorde}</span></div>
+            </div>
+        </div>
+    `;
+
+    let msgTemplate = document.getElementById('user-msg') ? document.getElementById('user-msg').value : "🎉 ¡Felicidades [CLIENTE]! 🎉\\nTu boleto [NUMERO] para [SORTEO] está confirmado.";
+    let msj = msgTemplate.replace(/\[CLIENTE\]/g, nombre).replace(/\[NUMERO\]/g, numerosStr).replace(/\[SORTEO\]/g, sorteoNombre);
+    msj += `\\n\\nCifras: *${cifras}*\\nEstatus: *${estatus.toUpperCase()}*`;
+
+    btn.innerText = "Generar venta libre"; btn.disabled = false;
+    document.getElementById('vl-nombre').value = '';
+    document.getElementById('vl-whatsapp').value = '';
+    document.getElementById('vl-numeros').value = '';
+    document.getElementById('vl-logo').value = ''; 
+    document.getElementById('vl-logo-preview-box').style.display = 'none';
+
+    Swal.fire({
+        title: '¡Generado con éxito!',
+        html: '<div style="display:flex; flex-direction:column; gap:12px; margin-top: 15px;">' +
+              '<button onclick="navigator.clipboard.writeText(decodeURIComponent(\'' + encodeURIComponent(msj) + '\')); Swal.fire(\'¡Copiado!\', \'Mensaje copiado al portapapeles\', \'success\');" style="background:#25D366; color:white; padding:14px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; width:100%; font-size: 1.05em; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">💬 Copiar mensajes de texto</button>' +
+              '<button onclick="document.getElementById(\'modal-digital\').style.display = \'flex\'; Swal.close();" style="background:#007bff; color:white; padding:14px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; width:100%; font-size: 1.05em; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">📥 Ver boleto digital</button>' +
+              '<button onclick="document.querySelector(\'#view-user select\').value=\'gridlibre\'; switchUserTab(\'gridlibre\'); Swal.close();" style="background:#111; color:var(--accent); padding:14px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; width:100%; font-size: 1.05em; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">📊 Ir a ventas libres</button>' +
+              '</div>',
+        showConfirmButton: false,
+        showCloseButton: true
+    });
+};
+window.calcularFondos = async () => {
+    document.getElementById('fondo-total').innerText = "...";
+    document.getElementById('fondo-semana').innerText = "...";
+    document.getElementById('fondo-plantillas').innerText = "...";
+    document.getElementById('fondo-libres').innerText = "...";
+
+    let totalPlantillas = 0;
+    let totalLibres = 0;
+    let totalSemana = 0;
+    const ahora = Date.now();
+    const unaSemana = 7 * 24 * 60 * 60 * 1000;
+
+    try {
+        const snapT = await get(ref(db, `templates/${auth.currentUser.uid}`));
+        if(snapT.exists()) {
+            const templates = snapT.val();
+            Object.values(templates).forEach(tpl => {
+                let precioBase = parseFloat(String(tpl.precioBoleto).replace(/[^0-9.]/g, '')) || 0;
+                let tplTime = 0;
+                if(tpl.fecha) {
+                    const parts = tpl.fecha.split('/');
+                    if(parts.length === 3) tplTime = new Date(parts[2], parts[1]-1, parts[0]).getTime();
+                }
+                let esSemana = (ahora - tplTime) <= unaSemana;
+
+                if(tpl.tickets) {
+                    Object.values(tpl.tickets).forEach(tk => {
+                        let pagoReal = parseFloat(tk.pago) || 0;
+                        if(tk.estatus === 'pagado') {
+                            let sumar = pagoReal > 0 ? pagoReal : precioBase;
+                            totalPlantillas += sumar;
+                            if(esSemana) totalSemana += sumar;
+                        }
+                    });
+                }
+            });
+        }
+
+        const snapV = await get(ref(db, `ventas_libres/${auth.currentUser.uid}`));
+        if(snapV.exists()) {
+            const ventas = snapV.val();
+            Object.values(ventas).forEach(v => {
+                let costo = parseFloat(v.costo) || 0;
+                if(v.estatus === 'pagado') {
+                    totalLibres += costo;
+                    if(v.timestamp && (ahora - v.timestamp) <= unaSemana) {
+                        totalSemana += costo;
+                    }
+                }
+            });
+        }
+
+        let totalGlobal = totalPlantillas + totalLibres;
+
+        document.getElementById('fondo-total').innerText = totalGlobal.toLocaleString('es-MX', {minimumFractionDigits: 2});
+        document.getElementById('fondo-semana').innerText = totalSemana.toLocaleString('es-MX', {minimumFractionDigits: 2});
+        document.getElementById('fondo-plantillas').innerText = totalPlantillas.toLocaleString('es-MX', {minimumFractionDigits: 2});
+        document.getElementById('fondo-libres').innerText = totalLibres.toLocaleString('es-MX', {minimumFractionDigits: 2});
+    } catch(e) {
+        console.error("Error calculando fondos", e);
+        document.getElementById('fondo-total').innerText = "0.00";
+    }
+};
+
+window.cargarHistorialVL = () => {
+    onValue(ref(db, 'ventas_libres/' + auth.currentUser.uid), (snapshot) => {
+
+        const grid = document.getElementById('vl-grid-render');
+        grid.innerHTML = '';
+        if(!snapshot.exists()) {
+            grid.innerHTML = '<p style="grid-column: span 5; text-align:center; padding: 20px; font-weight: bold; color: #666;">No hay ventas libres generadas aún.</p>';
+            return;
+        }
+        
+                const data = snapshot.val();
+        Object.entries(data).forEach(([key, venta]) => {
+            const colorClass = venta.estatus === 'pagado' ? 'status-pagado' : 'status-apartado';
+            const cell = document.createElement('div');
+            
+            // Replicando CSS exacto de celda 1 oportunidad
+            cell.className = 'grid-cell';
+            cell.style.minHeight = '20px';
+            cell.style.fontSize = '0.55em';
+            
+            cell.innerHTML = `
+                <div style="font-weight: 900; font-size: 0.9em; margin-right: 5px;"><span class="cell-num">${venta.numeros}</span></div>
+                <span class="cell-name ${colorClass}" style="line-height: 1.1;">${venta.nombre}</span>
+            `;
+                       cell.onclick = async () => {
+                const snapPerfil = await get(ref(db, `users/${auth.currentUser.uid}/perfil`));
+                const perfil = snapPerfil.val() || {};
+                const waVendedor = perfil.wa || "TU_NUMERO";
+                const fbEnlace = perfil.fb || "Tu página de Facebook";
+                                const linkBoletoVL = `${window.location.origin}${window.location.pathname}?vl=true&uid=${auth.currentUser.uid}&key=${key}`;
+                const msjText = `🎉 ¡Felicidades ${venta.nombre} ! 🎉\nTu boleto número *${venta.numeros}* para el sorteo *🍀 ${venta.sorteo} 🍀* ha sido confirmado.\n\nEstatus: *${venta.estatus.toUpperCase()}*\n👉 *Compra más boletos:* https://wa.me/${waVendedor}\n📲 *Síguenos en Whassapp:* ${fbEnlace}\n\n🎟️ *Descarga tu boleto digital aquí:* ${linkBoletoVL}`;
+
+                Swal.fire({
+                    title: venta.nombre,
+                    html: '<p style="font-size: 0.9em;"><strong>Números:</strong> ' + venta.numeros + '</p>' +
+                          '<p style="font-size: 0.9em;"><strong>Sorteo:</strong> ' + venta.sorteo + '</p>' +
+                          '<p style="font-size: 0.9em;"><strong>Costo:</strong> $' + venta.costo + ' (' + venta.estatus + ')</p>' +
+                          '<div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">' +
+                          '<button onclick="navigator.clipboard.writeText(decodeURIComponent(\'' + encodeURIComponent(msjText) + '\')); Swal.fire(\'¡Copiado!\', \'Mensaje copiado al portapapeles\', \'success\');" style="background:#25D366; color:white; padding:10px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; width:100%;"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:15px; vertical-align:middle; margin-right:5px; filter:brightness(0) invert(1);"> Copiar Mensaje</button>' +
+                          '<button onclick="window.renderizarBoletoDigitalVL(\'' + key + '\');" style="background:#007bff; color:white; padding:10px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; width:100%;">🎟️ Ver Boleto Digital</button>' +
+                          '</div>',
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: '📝 Editar',
+                    denyButtonText: '💬 Contactar',
+                    cancelButtonText: 'Cerrar'
+                }).then((res) => {
+                    if(res.isConfirmed) {
+                        Swal.fire({
+                            title: 'Editar Venta Libre',
+                            html: '<label style="font-size:0.8em;font-weight:bold;">Nombre:</label>' +
+                                  '<input id="swal-vl-nombre" type="text" class="swal2-input" value="' + venta.nombre + '" style="width:80%; margin: 5px auto 10px;">' +
+                                  '<label style="font-size:0.8em;font-weight:bold;">Números:</label>' +
+                                  '<input id="swal-vl-numeros" type="text" class="swal2-input" value="' + venta.numeros + '" style="width:80%; margin: 5px auto 10px;">' +
+                                  '<label style="font-size:0.8em;font-weight:bold;">Estatus:</label>' +
+                                  '<select id="swal-vl-estatus" class="swal2-input" style="width:80%; margin: 5px auto 10px;">' +
+                                  '<option value="apartado" ' + (venta.estatus === 'apartado' ? 'selected' : '') + '>Apartado</option>' +
+                                  '<option value="pagado" ' + (venta.estatus === 'pagado' ? 'selected' : '') + '>Pagado</option>' +
+                                  '</select>' +
+                                  '<label style="font-size:0.8em;font-weight:bold;">Abono / Costo:</label>' +
+                                  '<input id="swal-vl-costo" type="number" class="swal2-input" value="' + venta.costo + '" style="width:80%; margin: 5px auto 15px;">',
+                            preConfirm: () => {
+                                update(ref(db, 'ventas_libres/' + auth.currentUser.uid + '/' + key), {
+                                    nombre: document.getElementById('swal-vl-nombre').value,
+                                    numeros: document.getElementById('swal-vl-numeros').value,
+                                    estatus: document.getElementById('swal-vl-estatus').value,
+                                    costo: document.getElementById('swal-vl-costo').value
+                                });
+                            }
+                        }).then((r) => { if(r.isConfirmed) Swal.fire('Actualizado', '', 'success'); });
+                    } else if (res.isDenied) {
+                        if(venta.whatsapp) window.open('https://wa.me/' + venta.whatsapp, '_blank');
+                        else Swal.fire('Sin WhatsApp', 'No se registró un número para este cliente.', 'info');
+                    }
+                });
+            };
+
+            grid.appendChild(cell);
+        });
+
+    });
+};
+window.borrarHistorialVentasLibres = () => {
+    Swal.fire({
+        title: '¿Borrar recuadro de ventas libres?',
+        text: 'Se limpiará toda la cuadrícula y se generará un espacio nuevo. Útil para no confundir tus números al terminar un sorteo.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#666',
+        confirmButtonText: 'Sí, borrar todo',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            set(ref(db, 'ventas_libres/' + auth.currentUser.uid), null);
+            Swal.fire('¡Borrado!', 'El recuadro de ventas libres ha sido limpiado por completo.', 'success');
+        }
+    });
+};
+
+window.renderizarBoletoDigitalVL = async (key) => {
+    Swal.close();
+    const snap = await get(ref(db, 'ventas_libres/' + auth.currentUser.uid + '/' + key));
+    if (!snap.exists()) return;
+    const venta = snap.val();
+
+    const dtRender = document.getElementById('digital-ticket-render');
+    dtRender.style.display = 'flex';
+    dtRender.style.background = 'white';
+
+    const fecha = venta.fecha || new Date().toLocaleDateString('es-MX');
+    const colorEstatus = venta.estatus === 'pagado' ? '#2e7d32' : '#f57c00';
+
+    let borderColor = "#111111";
+    let textoBorde = venta.base ? venta.base.toUpperCase() : "SORTEO";
+    let logoCabecera = "";
+    let logoBorde = "";
+
+    const snapSet = await get(ref(db, 'settings'));
+    const settings = snapSet.val() || {};
+
+    if (venta.base === "Lotería Nacional") {
+        borderColor = "#b71c1c";
+        if (settings.logo_loteria) {
+            logoCabecera = `<img src="${settings.logo_loteria}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
+            logoBorde = `<img src="${settings.logo_loteria}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
+        }
+    } else if (venta.base === "Tris Clásico") {
+        borderColor = "#d81b60";
+        if (settings.logo_tris) {
+            logoCabecera = `<img src="${settings.logo_tris}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
+            logoBorde = `<img src="${settings.logo_tris}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
+        }
+    }
+
+    const marca = document.getElementById('user-marca') ? (document.getElementById('user-marca').value || "ZONATECNO PREMIA") : "ZONATECNO PREMIA";
+    const imgUrl = venta.logo || "";
+
+    dtRender.innerHTML = `
+        <div style="display: flex; width: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); background: white;">
+            <div style="width: 26px; min-width: 26px; background-color: ${borderColor}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 0; color: white; font-size: 0.65em; font-weight: bold; writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: 2px; border-right: 2px dashed rgba(255,255,255,0.4);">
+                <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">${logoBorde}<span>${textoBorde}</span>${logoBorde}<span>${textoBorde}</span>${logoBorde}<span>${textoBorde}</span></div>
+            </div>
+
+            <div style="flex-grow: 1; display: flex; flex-direction: column; min-width: 0;">
+                <div style="background: #111; color: white; text-align: center; padding: 20px 15px; position: relative;">
+                    ${imgUrl ? `<img src="${imgUrl}" style="width: 45px; height: 45px; object-fit: contain; position: absolute; top: 15px; right: 15px; background: white; border-radius: 8px;">` : ''}
+                    <h4 style="color:var(--accent); font-size: 0.8em; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; padding: 0 45px;">${marca}</h4>
+                    <h2 style="font-size: 1.65em; font-weight: 900; text-transform: uppercase; margin: 10px -5px 8px -5px; line-height: 1.05; word-break: break-word;">${venta.sorteo}</h2>
+                    <p style="font-size: 0.85em; color: #ccc; display: flex; align-items: center; justify-content: center;">En base a: <strong style="color: white; text-transform: uppercase; margin-left: 5px;">${venta.base}</strong> ${logoCabecera}</p>
+                </div>
+
+                <div style="height: 20px; background: white; position: relative; display: flex; align-items: center; justify-content: center;">
+                    <div style="position: absolute; left: -10px; width: 20px; height: 20px; background: ${borderColor}; border-radius: 50%;"></div>
+                    <div style="border-top: 2px dashed #ddd; width: 90%;"></div>
+                    <div style="position: absolute; right: -10px; width: 20px; height: 20px; background: ${borderColor}; border-radius: 50%;"></div>
+                </div>
+
+                <div style="padding: 15px 15px 25px 15px; text-align: center; background: white; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.25; pointer-events: none; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
+                        ${imgUrl ? `<img src="${imgUrl}" style="width: 150px; height: 150px; object-fit: contain; margin-bottom: 10px;">` : ''}
+                        <h1 style="font-size: 3em; color: #000; text-transform: uppercase; font-weight: 900; margin: 0; line-height: 1;">${venta.base || ''}</h1>
+                    </div>
+                    <div style="position: relative; z-index: 2;">
+                        <p style="font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85em; margin-bottom: 5px;">BOLETO VENTA LIBRE</p>
+                        <h1 style="font-size: ${venta.numeros.length > 8 ? '2.5em' : '4em'}; font-weight: 900; color: #111; line-height: 1; margin: 0 0 10px 0; word-break: break-word;">${venta.numeros}</h1>
+                        <p style="font-size: 1.1em; color: #444; margin-bottom: 20px;">A nombre de: <strong style="color: #111; text-transform: uppercase; font-weight: 900;">${venta.nombre}</strong></p>
+                        <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #eaeaea; margin-bottom: 20px;">
+                            <strong style="color: #111; font-size: 0.9em;">Fecha de compra:</strong> <span style="font-size: 0.85em; color: #555;">${fecha}</span>
+                        </div>
+                        <div style="background: ${colorEstatus}; color: white; padding: 15px; border-radius: 10px; font-weight: 900; font-size: 1.2em; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            ESTATUS: ${venta.estatus}
+                        </div>
+                        ${venta.cifras ? `<p style="font-size: 0.75em; color: #999; margin-top: 15px;">Juego de ${venta.cifras} Cifras • ¡Mucha Suerte!</p>` : ''}
+                    </div>
+                </div>
+            </div>
+
+            <div style="width: 26px; min-width: 26px; background-color: ${borderColor}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 0; color: white; font-size: 0.65em; font-weight: bold; writing-mode: vertical-rl; letter-spacing: 2px; border-left: 2px dashed rgba(255,255,255,0.4);">
+                <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">${logoBorde}<span>${textoBorde}</span>${logoBorde}<span>${textoBorde}</span>${logoBorde}<span>${textoBorde}</span></div>
+            </div>
+        </div>
+    `;
+    document.getElementById('modal-digital').style.display = 'flex';
 };
 
 </script>
