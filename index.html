@@ -863,21 +863,35 @@ if (urlParams.get('public') === 'true') {
             document.querySelectorAll('.btn').forEach(b => b.style.display = 'none'); // Ocultar botones de gestión
             document.querySelector('.view-grid p')?.remove(); // Quitar instrucción de gestión
             
-            // Modificar comportamiento de celdas: En lugar de modal, enviar a WhatsApp
-            const cells = document.querySelectorAll('.grid-cell');
-            cells.forEach(cell => {
-                const num = cell.querySelector('.cell-num').innerText.split('\n')[0];
-                const name = cell.querySelector('.cell-name').innerText.trim();
-                
-                if(!name) { // Solo números libres
-                    cell.onclick = () => {
-                        const text = encodeURIComponent(`Hola, vi tu tabla en línea y me interesa apartar el número ${num} para el sorteo ${t.nombre}.`);
-                        window.open(`https://wa.me/${waNum}?text=${text}`, '_blank');
-                    };
+                        // Modificar comportamiento de celdas: En lugar de modal, enviar a WhatsApp
+            window.openTicketModal = (num, td) => {
+                if(!td || !td.nombre) {
+                    const text = encodeURIComponent(`Hola, vi tu tabla en línea y me interesa apartar el número ${num} para el sorteo ${t.nombre}.`);
+                    Swal.fire({
+                        title: `Número ${num} Disponible`,
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonColor: '#25D366',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Lo quiero apartar',
+                        cancelButtonText: 'Cerrar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.open(`https://wa.me/${waNum}?text=${text}`, '_blank');
+                        }
+                    });
                 } else {
-                    cell.onclick = () => Swal.fire('Ocupado', 'Este número ya ha sido asignado.', 'info');
+                    const estatus = td.estatus === 'pagado' ? 'Pagado' : 'Apartado';
+                    Swal.fire({
+                        title: `Número Ocupado`,
+                        html: `<div style="font-size: 1.1em;"><b>Nombre:</b> ${td.nombre}<br><b>Estatus:</b> <span style="color: ${estatus === 'Pagado' ? '#2e7d32' : '#f57c00'}">${estatus}</span></div>`,
+                        icon: 'info',
+                        confirmButtonText: 'Cerrar',
+                        confirmButtonColor: '#111'
+                    });
                 }
-            });
+            };
+
         });
     }
     else if (urlParams.get('vl') === 'true') {
