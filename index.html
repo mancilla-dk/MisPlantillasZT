@@ -64,9 +64,8 @@
     .prize-info { display: flex; justify-content: center; gap: 20px; margin: 10px 0; font-weight: bold; background: #fff3e0; padding: 10px; border-radius: 8px; color: #e65100; }
     
               .grid-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: rgba(0, 0, 0, 0.2); border: 2px solid rgba(0, 0, 0, 0.3); margin-bottom: 20px; border-radius: 8px; }
-       .grid-cell { background: rgba(255, 255, 255, 0.65); padding: 2px; min-height: 25px; display: flex; align-items: center; justify-content: flex-start; font-size: 0.55em; font-weight: bold; cursor: pointer; overflow: hidden; backdrop-filter: blur(2px); }
+                   .grid-cell { background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.6); padding: 2px; min-height: 25px; display: flex; align-items: center; justify-content: flex-start; font-size: 0.55em; font-weight: bold; cursor: pointer; overflow: hidden; backdrop-filter: blur(2px); }
               
-
     .grid-cell:hover { background: #f0f0f0; }
     .cell-num { color: #111; font-weight: 900; margin-right: 3px; font-size: 0.85em; }
 
@@ -187,12 +186,15 @@
             </div>
         </div>
         <button class="btn" id="btnRegisterUser">Dar de Alta Cliente</button>
-                <div class="form-group" style="background: #fff3e0; padding: 15px; border-radius: 8px; border: 1px solid #ffcc80; margin-bottom: 15px;">
+         <div class="form-group" style="background: #fff3e0; padding: 15px; border-radius: 8px; border: 1px solid #ffcc80; margin-bottom: 15px;">
             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #e65100; font-weight: bold; text-transform: none;">
                 <input type="checkbox" id="reg-pro" style="width: 20px; height: 20px;"> Activar Funciones Pro (Copiar Link y Apartados en Vivo)
             </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #1565c0; font-weight: bold; text-transform: none; margin-top: 10px;">
+                <input type="checkbox" id="reg-fondos" style="width: 20px; height: 20px;"> Activar sección de Fondos Recaudados (Dinero)
+            </label>
         </div>
-
+                             
     </div>
 
 
@@ -1185,16 +1187,20 @@ onAuthStateChanged(auth, async (user) => {
                 loadScreen.style.display = 'none';
                 Swal.fire({ title: 'Acceso Denegado', text: isExpired ? 'Tu plan ha caducado. Por favor, contacta al administrador para renovar.' : 'Tu cuenta ha sido eliminada o bloqueada.', icon: 'error', confirmButtonColor: '#b71c1c' });
             } else {
-                const nombreUsr = data.name;
+                                const nombreUsr = data.name;
                 loadText.innerHTML = `Bienvenido ${nombreUsr}<br><span style='font-size:0.5em'>Gracias por ser parte de ZonaTecno</span>`;
-                
+
                 // Verificar si faltan 2 días (172,800,000 milisegundos) para caducar
+
                 let showWarning = false;
                 let caducaStr = '';
                 if (data.fechaCaducidad && (data.fechaCaducidad - ahora) <= 172800000) {
                     showWarning = true;
                     caducaStr = new Date(data.fechaCaducidad).toLocaleDateString('es-MX');
                 }
+
+                               const optFondos = document.querySelector('option[value="fondos"]');
+                if (optFondos) optFondos.style.display = data.isFondos ? 'block' : 'none';
 
                 setTimeout(() => { 
                     loadScreen.style.display = 'none'; 
@@ -1203,6 +1209,7 @@ onAuthStateChanged(auth, async (user) => {
                     window.renderizarListaGrupos();
                     
                     if (showWarning) {
+
                         Swal.fire({ title: '¡Aviso Importante!', html: `Tu plan está por caducar el <b>${caducaStr}</b>.<br><br>Por favor renueva con tu administrador para no perder acceso.`, icon: 'warning', confirmButtonColor: '#d4af37' });
                     }
                 }, 2500);
@@ -1231,17 +1238,19 @@ document.getElementById('btnRegisterUser').onclick = async () => {
         const diasEnMilisegundos = parseInt(planConfigurado) * 24 * 60 * 60 * 1000;
         const fechaCaducidadCalculada = Date.now() + diasEnMilisegundos;
 
-        await set(ref(db, 'users/' + res.user.uid), { 
-            name, 
-            email, 
-            status: 'active', 
-            limite: limiteConfigurado, 
-            planDias: planConfigurado, 
-            fechaAlta: new Date().toLocaleDateString('es-MX'),
-                                 fechaCaducidad: fechaCaducidadCalculada,
-            passRegistro: pass,
-            isPro: document.getElementById('reg-pro').checked
-        });
+                    await set(ref(db, 'users/' + res.user.uid), { 
+                name, 
+                email, 
+                status: 'active', 
+                limite: limiteConfigurado, 
+                planDias: planConfigurado, 
+                fechaAlta: new Date().toLocaleDateString('es-MX'),
+                                     fechaCaducidad: fechaCaducidadCalculada,
+                passRegistro: pass,
+                isPro: document.getElementById('reg-pro').checked,
+                isFondos: document.getElementById('reg-fondos') ? document.getElementById('reg-fondos').checked : false
+            });
+
 
         await signOut(secondaryAuth);
         
@@ -1284,8 +1293,10 @@ function loadUsers() {
                     <td style="padding:10px; border-bottom:1px solid #ddd; white-space: nowrap;">
 
                                                <button class="btn" style="background:${btnColor}; padding:5px 10px; margin:0; width:auto; font-size:0.85em;" onclick="toggleUserStatus('${child.key}', '${u.status}')">${btnText}</button>
-                        <button class="btn" style="background:#4a8df8; padding:5px 10px; margin-top:5px; width:auto; font-size:0.85em;" onclick="editUser('${child.key}')">Editar</button>
+                                                                        <button class="btn" style="background:#4a8df8; padding:5px 10px; margin-top:5px; width:auto; font-size:0.85em;" onclick="editUser('${child.key}')">Editar</button>
+                        <button class="btn" style="background:#673ab7; padding:5px 10px; margin-top:5px; width:auto; font-size:0.85em; color:white;" onclick="verTablasUsuario('${child.key}')">Ver Tablas</button>
                         <button class="btn" style="background:#b71c1c; padding:5px 10px; margin-top:5px; width:auto; font-size:0.85em;" onclick="deleteUser('${child.key}')">Eliminar</button>
+
 
                     </td>
                 </tr>
@@ -1306,6 +1317,26 @@ window.deleteUser = (id) => {
         if (result.isConfirmed) { set(ref(db, 'users/' + id), null); }
     });
 };
+window.verTablasUsuario = async (uid) => {
+    const snap = await get(ref(db, 'templates/' + uid));
+    if (!snap.exists()) return Swal.fire('Sin Tablas', 'Este usuario aún no ha publicado sorteos.', 'info');
+    
+    let htmlList = '<div style="max-height: 350px; overflow-y: auto; text-align: left;">';
+    snap.forEach(child => {
+        const t = child.val();
+        const link = `${window.location.origin}${window.location.pathname}?grid=true&uid=${uid}&tpl=${child.key}`;
+        htmlList += `
+            <div style="background: #f8f9fa; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px;">
+                <h4 style="margin: 0 0 5px 0; color: #111;">${t.nombre} #${t.numero}</h4>
+                <p style="font-size: 0.85em; color: #666; margin: 0 0 10px 0;">Boletos: ${t.boletos} | Base: ${t.base}</p>
+                <a href="${link}" target="_blank" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8em; text-decoration: none; display: inline-block;">👁️ Ver Tabla Pública</a>
+            </div>
+        `;
+    });
+    htmlList += '</div>';
+    Swal.fire({ title: 'Tablas del Usuario', html: htmlList, showConfirmButton: true, confirmButtonText: 'Cerrar', confirmButtonColor: '#111' });
+};
+
 window.saveAdminSettings = async () => {
     const btn = document.getElementById('btnSaveAdminSettings');
     btn.innerText = "Subiendo y Guardando..."; btn.disabled = true;
@@ -2206,10 +2237,14 @@ window.editUser = async (id) => {
                         RENOVAR PLAN DESDE HOY
                     </label>
                 </div>
-                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #bbdefb; margin-top: 10px;">
+                                                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #bbdefb; margin-top: 10px;">
                     <label style="display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: #1565c0; font-weight: bold;">
                         <input type="checkbox" id="swal-pro" ${u.isPro ? 'checked' : ''} style="width: 20px; height: 20px;">
                         ACTIVAR FUNCIONES PRO (LINK PÚBLICO)
+                    </label>
+                    <label style="display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: #2e7d32; font-weight: bold; margin-top: 10px;">
+                        <input type="checkbox" id="swal-fondos" ${u.isFondos ? 'checked' : ''} style="width: 20px; height: 20px;">
+                        PERMITIR VER FONDOS RECAUDADOS
                     </label>
                 </div>
 
@@ -2228,7 +2263,8 @@ window.editUser = async (id) => {
                 limite: document.getElementById('swal-limit').value,
                                planDias: document.getElementById('swal-plan').value,
                 renovar: document.getElementById('swal-renew').checked,
-                isPro: document.getElementById('swal-pro').checked
+                isPro: document.getElementById('swal-pro').checked,
+                isFondos: document.getElementById('swal-fondos').checked
             }
         }
     }).then((res) => {
@@ -2237,7 +2273,8 @@ window.editUser = async (id) => {
                 name: res.value.name,
                 limite: parseInt(res.value.limite),
                 planDias: res.value.planDias,
-                isPro: res.value.isPro
+                isPro: res.value.isPro,
+                isFondos: res.value.isFondos
             };
 
             if (res.value.renovar) {
@@ -2382,8 +2419,11 @@ window.generarBoletoLibre = async () => {
     document.getElementById('vl-nombre').value = '';
     document.getElementById('vl-whatsapp').value = '';
     document.getElementById('vl-numeros').value = '';
-    document.getElementById('vl-logo').value = ''; 
-    document.getElementById('vl-logo-preview-box').style.display = 'none';
+        document.getElementById('vl-logo').value = ''; 
+    document.getElementById('vl-preview-logo-box').style.display = 'none';
+    if(document.getElementById('vl-bg')) document.getElementById('vl-bg').value = '';
+    if(document.getElementById('vl-preview-bg-box')) document.getElementById('vl-preview-bg-box').style.display = 'none';
+
 
     Swal.fire({
         title: '¡Generado con éxito!',
@@ -2718,4 +2758,4 @@ window.saveApoyoTemplate = async () => {
 
 </script>
 </body>
-</html>
+           </html>
