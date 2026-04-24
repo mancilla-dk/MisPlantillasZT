@@ -138,6 +138,8 @@
             <option value="clientes">Gestionar Clientes</option>
             <option value="nuevo">Registrar Nuevo Cliente</option>
             <option value="moderacion">Aprobar Enlaces Globales</option>
+                        <option value="tutorial">Publicar Novedades / YouTube</option>
+
             <option value="ajustes">Ajustes Web Generales</option>
             <option value="salir" style="color: red;">Cerrar Sesión</option>
         </select>
@@ -224,6 +226,14 @@
         <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Los enlaces aprobados aquí serán visibles para TODOS los usuarios del sistema.</p>
         <div id="lista-moderacion" style="display: grid; gap: 10px;"></div>
     </div>
+    <div id="admin-tutorial" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">Publicar Novedad o Tutorial</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Avisa a tus usuarios sobre nuevas funciones o sube un video de YouTube explicativo.</p>
+        <div class="form-group"><label>Título del Aviso</label><input type="text" id="admin-tut-titulo" placeholder="Ej: Nueva Actualización VIP"></div>
+        <div class="form-group"><label>Link del Video de YouTube (Opcional)</label><input type="text" id="admin-tut-yt" placeholder="Ej: https://youtu.be/xxxxx"></div>
+        <div class="form-group"><label>Mensaje / Detalles (Opcional)</label><textarea id="admin-tut-desc" rows="4" placeholder="Escribe aquí los detalles de la novedad..."></textarea></div>
+        <button class="btn btn-green" onclick="window.guardarTutorialAdmin()">Publicar Novedad a todos los usuarios</button>
+    </div>
 
 </div>
 <div id="view-user" class="view">
@@ -237,6 +247,8 @@
             <option value="loterias">Ver Calendario y Sorteos en Vivo</option>
                                              <option value="perfil">Mi Perfil y WhatsApp de Ventas</option>
             <option value="proveedor">Contactar a mi Proveedor</option>
+                        <option value="novedades">📢 Tutoriales y Novedades</option>
+
                       <option value="grupos">Grupos para publicar</option>
                        <option value="ventalibre">Generar Venta Libre (Boleto Individual)</option>
             <option value="apoyo">📝 Crear Lista de Apoyo (0-9)</option>
@@ -261,7 +273,7 @@
         <div class="form-row">
             <div class="form-group"><label>En base a</label>
                 <select id="t-base">
-                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Entre amigos</option>
+                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Tris Todo el Día</option><option>Entre amigos</option>
                 </select>
             </div>
             <div class="form-group"><label>Boletos (Máx 100)</label><input type="number" id="t-boletos" value="100" max="100"></div>
@@ -352,13 +364,9 @@
             <label>Mi WhatsApp de Ventas (Con cód. país Ej: 52)</label>
             <input type="text" id="user-wa-num" placeholder="Ej: 5215551234567">
         </div>
-                          <div class="form-group">
+                                  <div class="form-group">
             <label>Página de Facebook o Link (Opcional)</label>
             <input type="text" id="user-fb" placeholder="Link de tu página de Facebook">
-        </div>
-        <div class="form-group">
-            <label>Link de Grupo de WhatsApp (Opcional)</label>
-            <input type="text" id="user-gwa" placeholder="Link de tu grupo de WhatsApp">
         </div>
 
         <div class="form-group">
@@ -383,10 +391,47 @@ Ve la lista en tiempo real de nuestro tablero aqui:
         </div>
 
         <button class="btn" onclick="saveUserProfile()">Guardar Mi Configuración</button>
-                <div class="form-group" style="background: #f1f8e9; padding: 15px; border-radius: 8px; border: 1px solid #c5e1a5; margin-bottom: 20px;">
-            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #33691e; font-weight: bold; text-transform: none;">
-                <input type="checkbox" id="user-include-link" style="width: 20px; height: 20px;"> Incluir link de "Ver tabla actualizada" en el mensaje final
-            </label>
+        
+        <h4 style="margin-top: 30px; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 5px;">Configuración y Enlaces <span id="badge-vip" style="font-size: 0.6em; background: #d4af37; color: #111; padding: 3px 8px; border-radius: 10px; vertical-align: middle; display: none;">VIP</span></h4>
+        <div id="vip-locked-message" style="display: none; background: #ffebee; color: #b71c1c; padding: 15px; border-radius: 8px; border-left: 5px solid #b71c1c; margin-top: 15px; font-weight: bold; font-size: 0.9em; text-align: center;">
+            🔒 Actualiza tu plan VIP con tu proveedor para activar tu Página de Perfil, Links de Grupos y Tabla en Vivo.
+        </div>
+        <div id="profile-vip-section" style="transition: 0.3s; margin-top: 15px;">
+            <div class="form-group">
+                <label>Link de Grupo de WhatsApp (Opcional)</label>
+                <input type="text" id="user-gwa" placeholder="Link de tu grupo de WhatsApp">
+            </div>
+            <div class="form-group" style="background: #f1f8e9; padding: 15px; border-radius: 8px; border: 1px solid #c5e1a5; margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #33691e; font-weight: bold; text-transform: none;">
+                    <input type="checkbox" id="user-include-link" style="width: 20px; height: 20px;"> Incluir link de "Ver tabla actualizada" en el mensaje final
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Título de tu Página de Perfil</label>
+
+                <input type="text" id="user-profile-title" placeholder="Ej: Sorteos VIP Oficial">
+            </div>
+            <div class="form-group">
+                <label>Texto Breve para Venta Libre</label>
+                <textarea id="user-profile-vl-text" rows="2" placeholder="Participa en nuestra venta libre, elige tu número de la suerte..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Imagen Promocional (Venta Libre)</label>
+                <input type="file" id="user-profile-vl-img" accept="image/*" style="padding: 10px; border: 2px dashed var(--accent); width: 100%; border-radius: 8px; cursor: pointer;" onchange="window.uploadInstant(this, 'preview-profile-vl')">
+                <div id="preview-profile-vl-box" style="display:none; margin-top:10px;"><img id="preview-profile-vl" src="" style="width:80px; border-radius:8px; object-fit: cover;"></div>
+            </div>
+                    <div class="form-group">
+            <label>Imágenes de Probabilidades de Hoy (Sube 1 por 1)</label>
+            <input type="file" id="user-profile-prob" accept="image/*" style="padding: 10px; border: 2px dashed #17a2b8; width: 100%; border-radius: 8px; cursor: pointer;" onchange="window.uploadProb(this)">
+            <div id="probs-gallery" style="display:flex; gap:10px; overflow-x:auto; margin-top:10px; padding-bottom: 10px;"></div>
+        </div>
+
+            <div class="form-group">
+                <label>Imágenes de Ganadores (Sube 1 por 1 para el carrusel)</label>
+                <input type="file" id="user-profile-winner" accept="image/*" style="padding: 10px; border: 2px dashed #28a745; width: 100%; border-radius: 8px; cursor: pointer;" onchange="window.uploadWinner(this)">
+                <div id="winners-gallery" style="display:flex; gap:10px; overflow-x:auto; margin-top:10px; padding-bottom: 10px;"></div>
+            </div>
+            <button class="btn btn-outline" style="border-color: #673ab7; color: #673ab7; margin-bottom: 15px;" onclick="window.copyProfileLink()">🔗 Copiar Mi Link de Perfil Público</button>
         </div>
 
     </div>
@@ -399,6 +444,12 @@ Ve la lista en tiempo real de nuestro tablero aqui:
             <a href="#" id="wa-admin-link" target="_blank" class="btn btn-green" style="display: inline-block; text-decoration: none; padding: 12px 25px; font-size: 0.9em;"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:18px; vertical-align:middle; margin-right:8px; filter: brightness(0) invert(1);">Enviar Mensaje al Administrador</a>
         </div>
     </div>
+        <div id="user-novedades" style="display:none;">
+        <h3 style="margin-bottom: 15px; color: var(--primary);">📢 Novedades y Tutoriales</h3>
+        <p style="font-size: 0.85em; color: #666; margin-bottom: 20px;">Mantente al día con las últimas actualizaciones y videos de la administración.</p>
+        <div id="novedades-render" style="display: flex; flex-direction: column; gap: 15px;"></div>
+    </div>
+
         <div id="user-grupos" style="display:none;">
         <h3 style="margin-bottom: 15px; color: var(--primary);">Panel de publicaciones</h3>
         <p style="font-size: 0.85em; color: #666; margin-bottom: 20px;">Control de Grupos de WhatsApp.</p>
@@ -431,7 +482,7 @@ Ve la lista en tiempo real de nuestro tablero aqui:
         <div class="form-row">
             <div class="form-group"><label>En base a</label>
                 <select id="ap-base">
-                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Entre amigos</option>
+                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Tris Todo el Día</option><option>Entre amigos</option>
                 </select>
             </div>
             <div class="form-group"><label>Costo por número</label><input type="text" id="ap-precio" placeholder="Ej: $6"></div>
@@ -480,7 +531,7 @@ Ve la lista en tiempo real de nuestro tablero aqui:
             <div class="form-group"><label>Título o Tipo de Sorteo</label><input type="text" id="vl-sorteo" placeholder="Ej: Tu suerte suma"></div>
             <div class="form-group"><label>En base a</label>
                 <select id="vl-base">
-                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Entre amigos</option>
+                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Tris Todo el Día</option><option>Entre amigos</option>
                 </select>
             </div>
         </div>
@@ -977,6 +1028,138 @@ if (urlParams.get('public') === 'true') {
         document.querySelector('#modal-digital .close-modal').style.display = 'none';
     }).catch(err => { alert("Error al cargar."); });
 }
+else if (urlParams.get('profile') === 'true' || urlParams.get('p') === '1') {
+    isPublicRoute = true;
+    document.getElementById('loading-screen').style.display = 'flex';
+    document.getElementById('loading-text').innerText = "Cargando perfil...";
+    const p_uid = urlParams.get('uid') || urlParams.get('u');
+
+                Promise.all([
+        get(ref(db, `users/${p_uid}/perfil`)),
+        get(ref(db, `templates/${p_uid}`)),
+        get(ref(db, `users/${p_uid}/ganadores`)),
+        get(ref(db, `settings`)),
+        get(ref(db, `users/${p_uid}/probabilidades`)),
+        get(ref(db, `ventas_libres/${p_uid}`))
+    ]).then(([snapP, snapT, snapG, snapSet, snapProb, snapVL]) => {
+        document.getElementById('loading-screen').style.display = 'none';
+        const perfil = snapP.val() || {};
+        const templates = snapT.val() || {};
+        const ganadores = snapG.val() || {};
+        const probabilidades = snapProb.val() || {};
+        const ventasLibres = snapVL.val() || {};
+
+
+        let htmlProbs = '';
+        const arrProbs = Object.values(probabilidades);
+        if(arrProbs.length > 0) {
+            let imgs = arrProbs.map(img => `<img src="${img}" style="width: 100%; flex-shrink: 0; object-fit: contain; max-height: 250px; border-radius: 10px;">`).join('');
+            htmlProbs = `
+                <div style="margin-bottom: 25px;">
+                    <h3 style="text-align:center; color: var(--primary); margin: 0 0 15px 0; text-transform: uppercase; font-weight: 900; font-size: 1.1em;">📊 Probabilidades de Hoy</h3>
+                    <div style="display:flex; overflow-x:auto; scroll-snap-type: x mandatory; gap:10px; padding-bottom:10px;">
+                        <style> .snap-prob-img img { scroll-snap-align: center; width: 90% !important; } </style>
+                        <div class="snap-prob-img" style="display:flex; gap:15px; width: 100%;">
+                            ${imgs}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        const waNum = perfil.wa || "";
+        const title = perfil.profileTitle || perfil.marca || "Sorteos Oficiales";
+        
+        let htmlTemplates = '';
+        Object.entries(templates).forEach(([key, t]) => {
+            const numText = encodeURIComponent(`Hola, vengo de tu página de perfil. Me interesa un boleto para el sorteo ${t.nombre}.`);
+            const linkWa = `https://wa.me/${waNum}?text=${numText}`;
+            htmlTemplates += `
+                <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid ${t.color || 'var(--accent)'};">
+                    <div>
+                        <h4 style="color: var(--primary); margin-bottom: 5px; font-weight: 800;">${t.nombre}</h4>
+                        <p style="font-size: 0.8em; color: #666; margin-bottom: 5px;">Premio: <strong>${t.premiosMonto}</strong></p>
+                        <p style="font-size: 0.8em; color: #666;">Boleto: <strong>${t.precioBoleto}</strong></p>
+                    </div>
+                    <a href="${linkWa}" target="_blank" style="background: #25D366; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.85em; text-align: center; box-shadow: 0 2px 4px rgba(37,211,102,0.3);">Comprar</a>
+                </div>
+            `;
+        });
+        if(!htmlTemplates) htmlTemplates = '<p style="text-align:center; color:#666; padding: 10px;">No hay sorteos activos en este momento.</p>';
+
+        let htmlGanadores = '';
+        const arrGanadores = Object.values(ganadores);
+        if(arrGanadores.length > 0) {
+            let imgs = arrGanadores.map(img => `<img src="${img}" style="width: 100%; flex-shrink: 0; object-fit: cover; border-radius: 10px; aspect-ratio: 1/1;">`).join('');
+            htmlGanadores = `
+                <h3 style="text-align:center; color: var(--primary); margin: 30px 0 15px 0; text-transform: uppercase; font-weight: 900;">🎉 Nuestros Ganadores 🎉</h3>
+                <div style="display:flex; overflow-x:auto; scroll-snap-type: x mandatory; gap:10px; padding-bottom:10px;">
+                    <style> .snap-img img { scroll-snap-align: center; width: 85% !important; } </style>
+                    <div class="snap-img" style="display:flex; gap:15px; width: 100%;">
+                        ${imgs}
+                    </div>
+                </div>
+            `;
+        }
+
+               let htmlVentaLibre = '';
+        let gridVLHtml = '';
+        if(Object.keys(ventasLibres).length > 0) {
+            gridVLHtml = '<div class="grid-container" style="grid-template-columns: repeat(5, 1fr); width: 100%; margin-top: 20px; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2);">';
+            Object.values(ventasLibres).forEach(v => {
+                const colorClass = v.estatus === 'pagado' ? 'color: #4ade80;' : 'color: #fb923c;';
+                gridVLHtml += `
+                    <div class="grid-cell" style="min-height: 20px; font-size: 0.55em; background: rgba(255,255,255,0.9); border-color: #333;">
+                        <div style="font-weight: 900; font-size: 0.9em; margin-right: 5px; color: #111;"><span class="cell-num">${v.numeros}</span></div>
+                        <span class="cell-name" style="line-height: 1.1; ${colorClass}">${v.nombre}</span>
+                    </div>
+                `;
+            });
+            gridVLHtml += '</div>';
+            gridVLHtml += `
+            <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px; font-size: 0.7em; font-weight: bold; padding-bottom: 10px;">
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background-color: #4ade80; border-radius: 2px;"></div><span style="color: #4ade80;">Pagado</span></div>
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 8px; height: 8px; background-color: #fb923c; border-radius: 2px;"></div><span style="color: #fb923c;">Apartado</span></div>
+            </div>`;
+        }
+
+        if(perfil.profileVlText || perfil.profileVlImg || gridVLHtml) {
+            const textWaLibre = encodeURIComponent(`Hola, vengo de tu página de perfil. Me interesa apartar un número de la Suerte (Venta Libre).`);
+            htmlVentaLibre = `
+                <div style="background: var(--primary); color: white; padding: 25px 20px; border-radius: 12px; margin-top: 30px; text-align: center; position: relative; overflow: hidden; border: 2px solid var(--accent);">
+                    <h3 style="color: var(--accent); margin-bottom: 15px; text-transform: uppercase;">🎟️ Venta Libre 🎟️</h3>
+                    ${perfil.profileVlText ? `<p style="font-size: 0.9em; line-height: 1.5; margin-bottom: 20px; color: #ddd;">${perfil.profileVlText}</p>` : ''}
+                    ${perfil.profileVlImg ? `<img src="${perfil.profileVlImg}" style="width: 100%; max-width: 300px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">` : ''}
+                    <a href="https://wa.me/${waNum}?text=${textWaLibre}" target="_blank" style="display: block; background: var(--accent); color: var(--primary); padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 900; font-size: 1em; box-shadow: 0 4px 10px rgba(212,175,55,0.3); text-transform: uppercase; margin-bottom: 15px;">Escoger mi número aquí</a>
+                    ${gridVLHtml}
+                </div>
+            `;
+        }
+
+        const footerFb = perfil.fb ? `<a href="${perfil.fb}" target="_blank" style="color:var(--accent); text-decoration:none; margin: 0 10px; font-weight: bold;">Facebook</a>` : '';
+        const footerWa = `<a href="https://wa.me/${waNum}" target="_blank" style="color:var(--accent); text-decoration:none; margin: 0 10px; font-weight: bold;">WhatsApp</a>`;
+
+        document.body.innerHTML = `
+            <div style="width: 100%; max-width: 500px; margin: 0 auto; background: var(--bg); min-height: 100vh; font-family: 'Montserrat', sans-serif;">
+                                <header style="background: var(--primary); color: var(--accent); padding: 20px 15px; text-align: center; border-bottom: 4px solid var(--accent); position: sticky; top: 0; z-index: 100;">
+                    <h2 style="margin: 0; font-weight: 900; font-size: 1.5em; text-transform: uppercase;">${title}</h2>
+                </header>
+                <div style="padding: 20px 15px;">
+                    ${htmlProbs}
+                    <h3 style="color: var(--primary); margin-bottom: 15px; font-size: 1.1em; text-transform: uppercase; font-weight: 900; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Sorteos Activos</h3>
+                    ${htmlTemplates}
+
+                    ${htmlVentaLibre}
+                    ${htmlGanadores}
+                </div>
+                <footer style="background: #111; padding: 20px; text-align: center; margin-top: 30px;">
+                    <p style="color: #666; font-size: 0.8em; margin-bottom: 10px;">Síguenos en nuestras redes</p>
+                    <div>${footerFb}${footerWa}</div>
+                </footer>
+            </div>
+        `;
+    }).catch(err => { alert("Error al cargar perfil."); });
+}
 
 const ADMIN_EMAIL = "zonatecno@admin.com";
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload";
@@ -998,6 +1181,7 @@ window.switchAdminTab = (tab) => {
     document.getElementById('admin-nuevo').style.display = (tab === 'nuevo') ? 'block' : 'none';
     document.getElementById('admin-ajustes').style.display = (tab === 'ajustes') ? 'block' : 'none';
     document.getElementById('admin-moderacion').style.display = (tab === 'moderacion') ? 'block' : 'none';
+    if(document.getElementById('admin-tutorial')) document.getElementById('admin-tutorial').style.display = (tab === 'tutorial') ? 'block' : 'none';
     if(tab === 'moderacion') window.cargarModeracion();
 };
 
@@ -1034,13 +1218,24 @@ window.togglePublico = (key, nuevoEstado) => {
 };
 
 window.switchUserTab = async (tab) => {
+    if ((tab === 'contactos' || tab === 'grupos') && !window.userIsPro) {
+        Swal.fire('Función Premium', 'Adquiere un plan VIP para acceder a esta función.', 'warning');
+        document.querySelector('select').value = 'lista';
+        tab = 'lista';
+    }
     document.getElementById('user-lista').style.display = (tab === 'lista') ? 'block' : 'none';
     document.getElementById('user-crear').style.display = (tab === 'crear') ? 'block' : 'none';
+
     document.getElementById('user-contactos').style.display = (tab === 'contactos') ? 'block' : 'none';
     document.getElementById('user-loterias').style.display = (tab === 'loterias') ? 'block' : 'none';
-        document.getElementById('user-perfil').style.display = (tab === 'perfil') ? 'block' : 'none';
+            document.getElementById('user-perfil').style.display = (tab === 'perfil') ? 'block' : 'none';
     document.getElementById('user-proveedor').style.display = (tab === 'proveedor') ? 'block' : 'none';
+    if(document.getElementById('user-novedades')) { 
+        document.getElementById('user-novedades').style.display = (tab === 'novedades') ? 'block' : 'none'; 
+        if(tab === 'novedades') window.cargarNovedadesUsuario(); 
+    }
     document.getElementById('user-grupos').style.display = (tab === 'grupos') ? 'block' : 'none';
+
     if(document.getElementById('user-ventalibre')) document.getElementById('user-ventalibre').style.display = (tab === 'ventalibre') ? 'block' : 'none';
      if(document.getElementById('user-apoyo')) document.getElementById('user-apoyo').style.display = (tab === 'apoyo') ? 'block' : 'none';
  if(document.getElementById('user-gridlibre')) {
@@ -1053,21 +1248,45 @@ window.switchUserTab = async (tab) => {
     }
  if(document.getElementById('user-ventalibre')) document.getElementById('user-ventalibre').style.display = (tab === 'ventalibre') ? 'block' : 'none';
 
-    if(tab === 'perfil') {
+           if(tab === 'perfil') {
+        const [snap, userSnap] = await Promise.all([
+            get(ref(db, `users/${auth.currentUser.uid}/perfil`)),
+            get(ref(db, `users/${auth.currentUser.uid}`))
+        ]);
+        const p = snap.val() || {};
+        const isPro = userSnap.val()?.isPro || false;
 
-        const snap = await get(ref(db, `users/${auth.currentUser.uid}/perfil`));
-        const p = snap.val();
+        const vipSection = document.getElementById('profile-vip-section');
+        const vipMsg = document.getElementById('vip-locked-message');
+        const badgeVip = document.getElementById('badge-vip');
+        if(vipSection) {
+            if(isPro) {
+                vipSection.style.pointerEvents = 'auto'; vipSection.style.opacity = '1';
+                vipMsg.style.display = 'none'; badgeVip.style.display = 'inline-block';
+            } else {
+                vipSection.style.pointerEvents = 'none'; vipSection.style.opacity = '0.4';
+                vipMsg.style.display = 'block'; badgeVip.style.display = 'none';
+            }
+        }
+
         if(p) {
             document.getElementById('user-marca').value = p.marca || '';
-            document.getElementById('user-wa-num').value = p.wa || '';
-                        document.getElementById('user-fb').value = p.fb || '';
+ document.getElementById('user-wa-num').value = p.wa || '';
+            document.getElementById('user-fb').value = p.fb || '';
             if(document.getElementById('user-gwa')) document.getElementById('user-gwa').value = p.gwa || '';
             document.getElementById('user-msg').value = p.msg || '';
-
-                        document.getElementById('user-include-link').checked = p.includeLink || false;
-
+            document.getElementById('user-include-link').checked = p.includeLink || false;
+            if(document.getElementById('user-profile-title')) document.getElementById('user-profile-title').value = p.profileTitle || '';
+            if(document.getElementById('user-profile-vl-text')) document.getElementById('user-profile-vl-text').value = p.profileVlText || '';
+            if(p.profileVlImg) {
+                window.currentProfileVlImg = p.profileVlImg;
+                if(document.getElementById('preview-profile-vl-box')) document.getElementById('preview-profile-vl-box').style.display = 'flex';
+                if(document.getElementById('preview-profile-vl')) document.getElementById('preview-profile-vl').src = p.profileVlImg;
+            }
+            window.loadWinnersGallery();
         }
     }
+
             if(tab === 'grupos') {
             let locales = JSON.parse(localStorage.getItem('enlacesGrupos')) || [];
             if(locales.length > 0) {
@@ -1107,13 +1326,15 @@ window.saveUserProfile = async () => {
     const data = {
         marca: document.getElementById('user-marca').value,
         wa: document.getElementById('user-wa-num').value,
-                                fb: document.getElementById('user-fb').value,
+        fb: document.getElementById('user-fb').value,
         gwa: document.getElementById('user-gwa') ? document.getElementById('user-gwa').value : '',
         msg: document.getElementById('user-msg').value,
-
-        includeLink: document.getElementById('user-include-link').checked
-
+        includeLink: document.getElementById('user-include-link').checked,
+        profileTitle: document.getElementById('user-profile-title') ? document.getElementById('user-profile-title').value : '',
+        profileVlText: document.getElementById('user-profile-vl-text') ? document.getElementById('user-profile-vl-text').value : '',
+        profileVlImg: window.lastUploadedUrls['preview-profile-vl'] || window.currentProfileVlImg || ''
     };
+
     await update(ref(db, `users/${auth.currentUser.uid}`), { perfil: data });
     Swal.fire({ title: '¡Guardado!', text: 'Tu perfil y configuración de boletos se han actualizado.', icon: 'success', confirmButtonColor: '#d4af37' });
 };
@@ -1187,7 +1408,9 @@ onAuthStateChanged(auth, async (user) => {
                 loadScreen.style.display = 'none';
                 Swal.fire({ title: 'Acceso Denegado', text: isExpired ? 'Tu plan ha caducado. Por favor, contacta al administrador para renovar.' : 'Tu cuenta ha sido eliminada o bloqueada.', icon: 'error', confirmButtonColor: '#b71c1c' });
             } else {
-                                const nombreUsr = data.name;
+                                               const nombreUsr = data.name;
+                window.userIsPro = data.isPro || false;
+                window.userIsFondos = data.isFondos || false;
                 loadText.innerHTML = `Bienvenido ${nombreUsr}<br><span style='font-size:0.5em'>Gracias por ser parte de ZonaTecno</span>`;
 
                 // Verificar si faltan 2 días (172,800,000 milisegundos) para caducar
@@ -1376,10 +1599,11 @@ document.getElementById('btnSaveTemplate').onclick = async () => {
         const templatesSnap = await get(ref(db, `templates/${auth.currentUser.uid}`));
         const totalCreadas = templatesSnap.exists() ? Object.keys(templatesSnap.val()).length : 0;
 
-        if (totalCreadas >= limite && limite > 0) {
+                if (totalCreadas >= limite && limite > 0) {
             btn.innerText = "Publicar Sorteo"; btn.disabled = false;
-            return Swal.fire({ title: 'Límite alcanzado', text: 'Has llegado a tu límite mensual de plantillas. Actualiza tu plan para crear más.', icon: 'warning', confirmButtonColor: '#d4af37' });
+            return Swal.fire({ title: 'Límite alcanzado', text: 'Limite alcanzado de plantillas renueva tu plan.', icon: 'warning', confirmButtonColor: '#d4af37' });
         }
+
     } catch(e) { console.error(e); }
 
        btn.innerText = "Publicando..."; 
@@ -1461,9 +1685,13 @@ function loadMyTemplates(uid) {
                         <button class="btn" style="flex:1; min-width:80px; padding:10px 5px; background:#b71c1c; color:white; margin-top:0; font-size:0.85em;" onclick="deleteTemplate('${child.key}')">Eliminar</button>
                         <button class="btn btn-green" style="flex:1; min-width:80px; padding:10px 5px; margin-top:0; font-size:0.85em;" onclick="openGrid('${child.key}').then(() => setTimeout(takeGridScreenshot, 800))">Descargar</button>
                     </div>
-                    <div style="display:flex; justify-content:space-between; background:#f8f9fa; padding:10px; border-radius:8px; font-size:0.85em;">
+                                       ${window.userIsFondos ? 
+                    `<div style="display:flex; justify-content:space-between; background:#f8f9fa; padding:10px; border-radius:8px; font-size:0.85em;">
                         <span style="color:#2e7d32; font-weight:bold;">💰 Pagado: $${totalAbonado.toFixed(2)}</span>
                         <span style="color:#f57c00; font-weight:bold;">⏳ Pendiente: $${totalPendiente.toFixed(2)}</span>
+                    </div>` : 
+                    `<div style="text-align:center; padding:10px; background:#f8f9fa; border-radius:8px; font-size:0.85em; color:#b71c1c; font-weight:bold;">🔒 Desbloquear acción premium</div>`}
+
                     </div>
                 </div>
             `;
@@ -1802,14 +2030,23 @@ window.saveTicketData = async () => {
           let msgDef = `🎉 ¡Felicidades [CLIENTE]! 🎉\nTu boleto número *[NUMERO]* para el sorteo *[SORTEO]* ha sido confirmado.\nTe deseo la mejor suerte de todo 🥳\nTu Estatus: *[ESTATUS]*\n👉 *Numero de Venta de WhatsApp* [WA_VENTAS]\n\n👍 Síguenos en Facebook para estar pendiente de nuestros ganadores y Sorteos.\n[LINK_FB]\n\n💬 Sé parte de nuestro grupo de WhatsApp para que estés enterado cuando salgan despreciados o números de suerte antes que nadie.\n[LINK_GWA]\n\nDescarga tu boleto de partición aqui:\n[LINK_BOLETO]\n\nVe la lista en tiempo real de nuestro tablero aqui:\n[LINK_TABLERO]`;
     let msj = perfil.msg || msgDef;
     let linkBoleto = `${window.location.origin}${window.location.pathname}?public=true&uid=${auth.currentUser.uid}&tpl=${currentTemplateId}&num=${currentTicketNum}`;
-    let linkTablero = `${window.location.origin}${window.location.pathname}?grid=true&uid=${auth.currentUser.uid}&tpl=${currentTemplateId}`;
+      let linkTablero = window.userIsPro ? `${window.location.origin}${window.location.pathname}?grid=true&uid=${auth.currentUser.uid}&tpl=${currentTemplateId}` : "🔒 Activa función VIP para ver el tablero en línea";
+
     
     msj = msj.replace(/\[CLIENTE\]/g, nombre).replace(/\[NUMERO\]/g, numerosStr).replace(/\[SORTEO\]/g, sorteoNombre);
+       let linkGwaPremium = window.userIsPro ? (perfil.gwa || 'Sin link guardado') : '🔒 Función VIP Requerida';
     msj = msj.replace(/\[ESTATUS\]/g, estatus.toUpperCase()).replace(/\[WA_VENTAS\]/g, `https://wa.me/${waVendedor}`);
-    msj = msj.replace(/\[LINK_FB\]/g, fbEnlace || 'Sin link guardado').replace(/\[LINK_GWA\]/g, perfil.gwa || 'Sin link guardado');
+    msj = msj.replace(/\[LINK_FB\]/g, fbEnlace || 'Sin link guardado').replace(/\[LINK_GWA\]/g, linkGwaPremium);
     msj = msj.replace(/\[LINK_BOLETO\]/g, linkBoleto).replace(/\[LINK_TABLERO\]/g, linkTablero);
     
-    if(!msj.includes(linkBoleto)) msj += `\n\n🎟️ Descarga tu boleto aquí: ${linkBoleto}`;
+        if(!msj.includes(linkBoleto)) msj += `\n\n🎟️ Descarga tu boleto aquí: ${linkBoleto}`;
+    
+    const snapUserPro1 = await get(ref(db, `users/${auth.currentUser.uid}`));
+    if(snapUserPro1.val()?.isPro) {
+        let linkPerfil1 = `${window.location.origin}${window.location.pathname}?p=1&u=${auth.currentUser.uid}`;
+        msj += `\n\n🌐 Ve nuestro perfil en nuestro sitio web:\n${linkPerfil1}`;
+    }
+
 
         Swal.fire({
         title: '¡Éxito!',
@@ -2413,7 +2650,13 @@ window.generarBoletoLibre = async () => {
     let msgTemplate = document.getElementById('user-msg') && document.getElementById('user-msg').value.trim() !== '' ? document.getElementById('user-msg').value : "🎉 ¡Felicidades [CLIENTE]! 🎉\\nTu boleto [NUMERO] para el sorteo [SORTEO] está confirmado.\\n\\n👍 Síguenos en Facebook para estar pendiente de nuestros ganadores y Sorteos.\\n💬 Sé parte de nuestro grupo de WhatsApp para que estés enterado cuando salgan despreciados o números de suerte antes que nadie.";
 
     let msj = msgTemplate.replace(/\[CLIENTE\]/g, nombre).replace(/\[NUMERO\]/g, numerosStr).replace(/\[SORTEO\]/g, sorteoNombre);
-    msj += `\\n\\nCifras: *${cifras}*\\nEstatus: *${estatus.toUpperCase()}*`;
+       msj += `\\n\\nCifras: *${cifras}*\\nEstatus: *${estatus.toUpperCase()}*`;
+
+    const snapUserPro2 = await get(ref(db, `users/${auth.currentUser.uid}`));
+    if(snapUserPro2.val()?.isPro) {
+        let linkPerfil2 = `${window.location.origin}${window.location.pathname}?p=1&u=${auth.currentUser.uid}`;
+        msj += `\\n\\n🌐 Ve nuestro perfil en nuestro sitio web:\\n${linkPerfil2}`;
+    }
 
     btn.innerText = "Generar venta libre"; btn.disabled = false;
     document.getElementById('vl-nombre').value = '';
@@ -2715,10 +2958,11 @@ window.uploadInstant = async (input, previewId) => {
                 previewImg.src = json.secure_url;
                 previewImg.style.opacity = '1';
             }
-            // Guardar en el perfil del usuario para persistencia (reutilización futura)
+                      // Guardar en el perfil del usuario para persistencia (reutilización futura)
             if(auth.currentUser) {
-                update(ref(db, `users/${auth.currentUser.uid}/galeria`), { [previewId]: json.secure_url });
+                push(ref(db, `users/${auth.currentUser.uid}/galeria`), json.secure_url);
             }
+
         }
     } catch(e) {
         console.error("Error en subida instantánea", e);
@@ -2755,7 +2999,157 @@ window.saveApoyoTemplate = async () => {
     Swal.fire('¡Éxito!', 'Lista de apoyo creada correctamente.', 'success');
     window.switchUserTab('lista');
 };
+window.copyProfileLink = () => {
+    const link = `${window.location.origin}${window.location.pathname}?p=1&u=${auth.currentUser.uid}`;
+    navigator.clipboard.writeText(link).then(() => Swal.fire('¡Copiado!', 'Link de perfil público copiado al portapapeles. ¡Pégalo donde quieras!', 'success'));
+};
+
+window.uploadWinner = async (input) => {
+    const file = input.files[0];
+    if(!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', "RifasExpress");
+    Swal.fire({ title: 'Subiendo a la galería...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    try {
+        const resp = await fetch("https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload", { method: 'POST', body: formData });
+        const json = await resp.json();
+        if(json.secure_url) {
+            await push(ref(db, `users/${auth.currentUser.uid}/ganadores`), json.secure_url);
+            Swal.fire('¡Subido!', 'Imagen agregada exitosamente al carrusel', 'success');
+            window.loadWinnersGallery();
+        }
+    } catch(e) { Swal.fire('Error', 'No se pudo subir la imagen', 'error'); }
+};
+
+window.loadWinnersGallery = async () => {
+    const snap = await get(ref(db, `users/${auth.currentUser.uid}/ganadores`));
+    const gal = document.getElementById('winners-gallery');
+    if(!gal) return;
+    gal.innerHTML = '';
+    if(snap.exists()) {
+        snap.forEach(child => {
+            const url = child.val();
+            const key = child.key;
+            gal.innerHTML += `<div style="position:relative; flex-shrink: 0;"><img src="${url}" style="width:70px; height:70px; object-fit:cover; border-radius:5px;"><button onclick="window.deleteWinner('${key}')" style="position:absolute; top:-5px; right:-5px; background:#dc2626; color:white; font-weight: bold; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer;">X</button></div>`;
+        });
+    }
+};
+
+window.uploadProb = async (input) => {
+    const file = input.files[0];
+    if(!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', "RifasExpress");
+    Swal.fire({ title: 'Subiendo probabilidad...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    try {
+        const resp = await fetch("https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload", { method: 'POST', body: formData });
+        const json = await resp.json();
+        if(json.secure_url) {
+            await push(ref(db, `users/${auth.currentUser.uid}/probabilidades`), json.secure_url);
+            Swal.fire('¡Subido!', 'Probabilidad agregada al carrusel', 'success');
+            window.loadProbsGallery();
+        }
+    } catch(e) { Swal.fire('Error', 'No se pudo subir la imagen', 'error'); }
+};
+
+window.loadProbsGallery = async () => {
+    const snap = await get(ref(db, `users/${auth.currentUser.uid}/probabilidades`));
+    const gal = document.getElementById('probs-gallery');
+    if(!gal) return;
+    gal.innerHTML = '';
+    if(snap.exists()) {
+        snap.forEach(child => {
+            const url = child.val();
+            const key = child.key;
+            gal.innerHTML += `<div style="position:relative; flex-shrink: 0;"><img src="${url}" style="width:70px; height:70px; object-fit:cover; border-radius:5px;"><button onclick="window.deleteProb('${key}')" style="position:absolute; top:-5px; right:-5px; background:#dc2626; color:white; font-weight: bold; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer;">X</button></div>`;
+        });
+    }
+};
+
+window.deleteProb = async (key) => {
+    await set(ref(db, `users/${auth.currentUser.uid}/probabilidades/${key}`), null);
+    window.loadProbsGallery();
+};
+window.guardarTutorialAdmin = async () => {
+    const titulo = document.getElementById('admin-tut-titulo').value;
+    const yt = document.getElementById('admin-tut-yt').value;
+    const desc = document.getElementById('admin-tut-desc').value;
+    if(!titulo) return Swal.fire('Faltan datos', 'Ponle un título a la novedad.', 'warning');
+    
+    let ytId = "";
+    if(yt) {
+        const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+        const match = yt.match(regex);
+        if(match) ytId = match[1];
+    }
+
+    await set(ref(db, 'novedades'), { titulo, ytId, desc, fecha: new Date().toLocaleDateString('es-MX') });
+    Swal.fire('¡Publicado!', 'La novedad ya es visible para todos los usuarios.', 'success');
+    document.getElementById('admin-tut-titulo').value = '';
+    document.getElementById('admin-tut-yt').value = '';
+    document.getElementById('admin-tut-desc').value = '';
+};
+
+window.cargarNovedadesUsuario = async () => {
+    const snap = await get(ref(db, 'novedades'));
+    const div = document.getElementById('novedades-render');
+    if(!snap.exists()) return div.innerHTML = '<p style="color:#666; font-weight:bold;">No hay novedades publicadas por el administrador.</p>';
+    
+    const n = snap.val();
+    let iframeHtml = n.ytId ? `<iframe width="100%" height="250" src="https://www.youtube.com/embed/${n.ytId}" frameborder="0" allowfullscreen style="border-radius:10px; margin-bottom:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"></iframe>` : '';
+    let descHtml = n.desc ? `<p style="font-size: 0.9em; color: #444; line-height: 1.5; white-space: pre-wrap; background: #f8f9fa; padding: 15px; border-radius: 8px;">${n.desc}</p>` : '';
+
+    div.innerHTML = `
+        <div style="background: white; padding: 20px; border-radius: 12px; border-top: 5px solid var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <h4 style="color: var(--primary); font-size: 1.2em; margin-bottom: 5px; text-transform: uppercase;">${n.titulo}</h4>
+            <p style="font-size: 0.75em; color: #999; margin-bottom: 15px;">Publicado: ${n.fecha}</p>
+            ${iframeHtml}
+            ${descHtml}
+        </div>
+    `;
+};
+document.querySelectorAll('input[type="file"]').forEach(input => {
+    if(!input.id || input.id.includes('admin') || input.id.includes('prob') || input.id.includes('winner')) return;
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-outline';
+    btn.style = 'margin-top: 10px; padding: 8px; font-size: 0.8em; display: block; width: 100%; border-style: dashed; border-color: var(--accent);';
+    btn.innerHTML = '🖼️ Elegir una de mis imágenes subidas <span style="font-size:0.8em; color:#b71c1c; font-weight:bold;">(VIP)</span>';
+    const previewId = input.getAttribute('onchange')?.match(/'([^']+)'/)?.[1];
+    if(previewId) {
+        btn.onclick = (e) => { e.preventDefault(); window.openGalleryModal(previewId); };
+        input.parentNode.insertBefore(btn, input.nextSibling);
+    }
+});
+
+window.openGalleryModal = async (previewId) => {
+    if (!window.userIsPro) {
+        return Swal.fire('Función Premium', '🔒 Adquiere un plan VIP con tu proveedor para guardar y reutilizar tus imágenes.', 'warning');
+    }
+    
+    const snap = await get(ref(db, `users/${auth.currentUser.uid}/galeria`));
+    if(!snap.exists()) return Swal.fire('Sin imágenes', 'Aún no has subido imágenes previamente.', 'info');
+    const urls = [];
+    snap.forEach(child => { urls.push(child.val()); });
+    const uniqueUrls = [...new Set(urls)].reverse();
+    let html = '<div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-height:60vh; overflow-y:auto; padding: 10px;">';
+    uniqueUrls.forEach(url => {
+        html += `<img src="${url}" style="width:100px; height:100px; object-fit:cover; border-radius:8px; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" onclick="window.selectGalleryImage('${url}', '${previewId}')">`;
+    });
+    html += '</div>';
+    Swal.fire({ title: 'Mis Imágenes', html: html, showConfirmButton: false, showCloseButton: true });
+};
+
+window.selectGalleryImage = (url, previewId) => {
+    window.lastUploadedUrls[previewId] = url;
+    const previewImg = document.getElementById(previewId);
+    const previewBox = document.getElementById(previewId + '-box');
+    if(previewImg) { previewImg.src = url; previewImg.style.opacity = '1'; }
+    if(previewBox) previewBox.style.display = 'flex';
+    Swal.close();
+};
 
 </script>
 </body>
-           </html>
+   </html>
