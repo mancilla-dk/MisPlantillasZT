@@ -243,13 +243,13 @@
         <select onchange="if(this.value === 'salir') document.getElementById('logoutBtn').click(); else switchUserTab(this.value);" style="border-color: var(--accent); font-weight: bold;">
             <option value="lista">Ver Mis Plantillas</option>
             <option value="crear">Publicar Nuevo Sorteo</option>
-            <option value="contactos">Contactar Clientes</option>
+                        <option value="contactos">👑 Contactar Clientes (VIP)</option>
             <option value="loterias">Ver Calendario y Sorteos en Vivo</option>
                                              <option value="perfil">Mi Perfil y WhatsApp de Ventas</option>
             <option value="proveedor">Contactar a mi Proveedor</option>
                         <option value="novedades">📢 Tutoriales y Novedades</option>
 
-                      <option value="grupos">Grupos para publicar</option>
+                      <option value="grupos">👑 Grupos para publicar (VIP)</option>
                        <option value="ventalibre">Generar Venta Libre (Boleto Individual)</option>
             <option value="apoyo">📝 Crear Lista de Apoyo (0-9)</option>
 
@@ -273,7 +273,7 @@
         <div class="form-row">
             <div class="form-group"><label>En base a</label>
                 <select id="t-base">
-                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Tris Todo el Día</option><option>Entre amigos</option>
+                    <option>Lotería Nacional</option><option>Tris Mediodía</option><option>Tris de las tres</option><option>Tris Extra</option><option>Tris de las siete</option><option>Tris Clásico</option><option>Tris Todo el Día</option><option>Entre amigos</option>
                 </select>
             </div>
             <div class="form-group"><label>Boletos (Máx 100)</label><input type="number" id="t-boletos" value="100" max="100"></div>
@@ -486,7 +486,7 @@ Ve la lista en tiempo real de nuestro tablero aqui:
         <div class="form-row">
             <div class="form-group"><label>En base a</label>
                 <select id="ap-base">
-                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Tris Todo el Día</option><option>Entre amigos</option>
+                    <option>Lotería Nacional</option><option>Tris Mediodía</option><option>Tris de las tres</option><option>Tris Extra</option><option>Tris de las siete</option><option>Tris Clásico</option><option>Tris Todo el Día</option><option>Entre amigos</option>
                 </select>
             </div>
             <div class="form-group"><label>Costo por número</label><input type="text" id="ap-precio" placeholder="Ej: $6"></div>
@@ -535,7 +535,7 @@ Ve la lista en tiempo real de nuestro tablero aqui:
             <div class="form-group"><label>Título o Tipo de Sorteo</label><input type="text" id="vl-sorteo" placeholder="Ej: Tu suerte suma"></div>
             <div class="form-group"><label>En base a</label>
                 <select id="vl-base">
-                    <option>Lotería Nacional</option><option>Tris Clásico</option><option>Tris Todo el Día</option><option>Entre amigos</option>
+                    <option>Lotería Nacional</option><option>Tris Mediodía</option><option>Tris de las tres</option><option>Tris Extra</option><option>Tris de las siete</option><option>Tris Clásico</option><option>Tris Todo el Día</option><option>Entre amigos</option>
                 </select>
             </div>
         </div>
@@ -782,14 +782,15 @@ if (urlParams.get('public') === 'true') {
     const snapSet = await get(ref(db, 'settings'));
     const settings = snapSet.val() || {};
 
-    if (t.base === "Lotería Nacional") { 
+        if (t.base === "Lotería Nacional") { 
         borderColor = "#b71c1c"; // Rojo oficial
         if(settings.logo_loteria) logoOficialRender = `<img src="${settings.logo_loteria}" style="width: 35px; height: 35px; object-fit: contain; position: absolute; top: 10px; left: 10px;">`;
     }
-    else if (t.base === "Tris Clásico") { 
+    else if (t.base && t.base.includes("Tris")) { 
         borderColor = "#2e7d32"; // Verde oficial
         if(settings.logo_tris) logoOficialRender = `<img src="${settings.logo_tris}" style="width: 35px; height: 35px; object-fit: contain; position: absolute; top: 10px; left: 10px;">`;
     }
+
 
         let todosMisNumeros = [];
         for (const [n, d] of Object.entries(t.tickets)) {
@@ -820,12 +821,13 @@ if (urlParams.get('public') === 'true') {
             borderColor = "#b71c1c";
             logoCabecera = `<img src="${settings.logo_loteria}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
             logoBorde = `<img src="${settings.logo_loteria}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
-                } else if ((t.base === "Tris Clásico" || t.base === "Tris Todo el Día") && settings.logo_tris) { 
+                                } else if (t.base && t.base.includes("Tris") && settings.logo_tris) { 
 
             borderColor = "#d81b60"; 
             logoCabecera = `<img src="${settings.logo_tris}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
             logoBorde = `<img src="${settings.logo_tris}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
         }
+
 
                 dtRender.innerHTML = `
         <div style="display: flex; width: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); background: white; background-image: url('${t.fondo || ''}'); background-size: cover; background-position: center;">
@@ -992,11 +994,12 @@ if (urlParams.get('public') === 'true') {
                 logoCabecera = `<img src="${settings.logo_loteria}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
                 logoBorde = `<img src="${settings.logo_loteria}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
             }
-                  } else if (venta.base === "Tris Clásico" || venta.base === "Tris Todo el Día") {
+                                    } else if (venta.base && venta.base.includes("Tris")) {
         borderColor = "#d81b60";
         if (settings.logo_tris) {
 
                 logoCabecera = `<img src="${settings.logo_tris}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
+
                 logoBorde = `<img src="${settings.logo_tris}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
             }
         }
@@ -1049,12 +1052,12 @@ else if (urlParams.get('profile') === 'true' || urlParams.get('p') === '1') {
         get(ref(db, `ventas_libres/${p_uid}`))
     ]).then(([snapP, snapT, snapG, snapSet, snapProb, snapVL]) => {
         document.getElementById('loading-screen').style.display = 'none';
-        const perfil = snapP.val() || {};
+                const perfil = snapP.val() || {};
         const templates = snapT.val() || {};
         const ganadores = snapG.val() || {};
         const probabilidades = snapProb.val() || {};
         const ventasLibres = snapVL.val() || {};
-
+        const settings = snapSet.val() || {};
 
                let htmlProbs = '';
         const hoy = new Date().toLocaleDateString('es-MX');
@@ -1123,15 +1126,15 @@ else if (urlParams.get('profile') === 'true' || urlParams.get('p') === '1') {
 
                 let cellAction = '';
                 if (!td || !td.nombre) {
-                    let textApartar = encodeURIComponent(`Hola, vi tu tabla en línea y me interesa apartar el número ${numStr} para el sorteo ${t.nombre}.`);
-                    cellAction = `onclick="window.open('https://wa.me/${waNum}?text=${textApartar}', '_blank')" style="cursor: pointer;"`;
+                    let textApartar = encodeURIComponent(`Hola, vi tu página de perfil y me interesa apartar el número ${numStr} para el sorteo ${t.nombre}.`);
+                    cellAction = `onclick="Swal.fire({title: 'Número ${numStr} Disponible', icon: 'success', showCancelButton: true, confirmButtonColor: '#25D366', cancelButtonColor: '#d33', confirmButtonText: 'Lo quiero apartar', cancelButtonText: 'Cerrar'}).then((result) => { if (result.isConfirmed) { window.open('https://wa.me/${waNum}?text=${textApartar}', '_blank'); } })" style="cursor: pointer;"`;
                 } else {
                     let estatusStr = td.estatus === 'pagado' ? 'Pagado' : 'Apartado';
                     cellAction = `onclick="Swal.fire({title: 'Número Ocupado', html: '<b>Nombre:</b> ${td.nombre}<br><b>Estatus:</b> <span style=&quot;color:${td.estatus === 'pagado' ? '#2e7d32' : '#f57c00'}&quot;>${estatusStr}</span>', icon: 'info', confirmButtonColor: '#111'})" style="cursor: pointer;"`;
                 }
 
-                gridCellsHtml += `
-                    <div class="grid-cell" ${cellAction} style="min-height: 25px; font-size: 0.55em; background: rgba(255,255,255,0.9); border-color: #333; display: flex; align-items: center; padding: 2px; transition: 0.2s;">
+                               gridCellsHtml += `
+                    <div class="grid-cell" ${cellAction} style="min-height: 25px; font-size: 0.55em; background: rgba(255,255,255,0.9); border-color: #333; display: flex; align-items: center; padding: 2px;">
                         <div style="${op === 1 ? 'font-weight: 900; font-size: 0.9em; margin-right: 5px;' : ''}">${displayNums}</div>
                         <span class="cell-name" style="line-height: 1.1; ${colorClass} text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${nameHTML}</span>
                     </div>
@@ -1140,10 +1143,33 @@ else if (urlParams.get('profile') === 'true' || urlParams.get('p') === '1') {
 
                         let colStyle = op >= 3 ? 'repeat(3, 1fr)' : (t.tipo === 'apoyo' ? '1fr' : 'repeat(5, 1fr)');
             
-            let logoOficial = "";
+                       let logoOficial = "";
             let borderColor = t.color || '#111111';
-            if (t.base === "Lotería Nacional" && snapSet.logo_loteria) logoOficial = `<img src="${snapSet.logo_loteria}" style="position: absolute; top: 0; left: 0; width: 45px; height: 45px; object-fit: contain; border-radius: 8px; z-index: 5;">`;
-                       if ((t.base === "Tris Clásico" || t.base === "Tris Todo el Día") && snapSet.logo_tris) logoOficial = `<img src="${snapSet.logo_tris}" style="position: absolute; top: 0; left: 0; width: 45px; height: 45px; object-fit: contain; border-radius: 8px; z-index: 5;">`;
+            if (t.base === "Lotería Nacional" && settings.logo_loteria) logoOficial = `<img src="${settings.logo_loteria}" style="position: absolute; top: 0; left: 0; width: 45px; height: 45px; object-fit: contain; border-radius: 8px; z-index: 5;">`;
+                       if (t.base && t.base.includes("Tris") && settings.logo_tris) logoOficial = `<img src="${settings.logo_tris}" style="position: absolute; top: 0; left: 0; width: 45px; height: 45px; object-fit: contain; border-radius: 8px; z-index: 5;">`;
+
+            let prizeInfoHtml = '';
+
+            if (t.base === 'Tris Todo el Día') {
+                const trisLogoSrc = settings.logo_tris || 'https://pronosticos.gob.mx/images/logos/tris.png';
+                prizeInfoHtml = `
+                <div style="display: flex; justify-content: space-between; gap: 2px; margin: 5px 0; font-size: 0.6em; font-weight: 900; color: #111;">
+                    ${['Mediodía', 'De las tres', 'Extra', 'De las siete', 'Clásico'].map(name => `
+                        <div style="display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.9); padding: 2px 1px; border-radius: 6px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 19%;">
+                            <img src="${trisLogoSrc}" crossorigin="anonymous" style="width: 20px; height: 20px; object-fit: contain; margin-bottom: 1px;">
+                            <span style="color: #004085; font-size: 0.7em; margin-bottom: 1px; text-align: center; line-height: 1;">${name}</span>
+                            <span style="background: #f1c40f; color: #000; padding: 1px 2px; border-radius: 3px; width: 95%; text-align: center; border: 1px solid #d4ac0d; text-shadow: none; font-size: 0.85em;">🥇 ${t.premiosMonto || '$500'}</span>
+                        </div>
+                    `).join('')}
+                </div>`;
+            } else {
+                prizeInfoHtml = `
+                <div class="prize-info" style="padding: 5px; margin: 5px 0; font-size: 0.8em; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap; background: #fff3e0; border-radius: 8px; color: #e65100; font-weight: bold;">
+                    <span>🏆 Premios: <span>${t.premiosQty}</span></span>
+                    <span>💰 Gana: <span>${t.premiosMonto}</span></span>
+                    <span>🎟️ Precio: <span>${t.precioBoleto}</span></span>
+                </div>`;
+            }
 
             htmlTemplates += `
                 <div style="background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; border-top: 4px solid ${borderColor}; overflow: hidden; position: relative;">
@@ -1155,18 +1181,15 @@ else if (urlParams.get('profile') === 'true' || urlParams.get('p') === '1') {
                             ${logoOficial}
                             ${t.logo ? `<img src="${t.logo}" style="position: absolute; top: 0; right: 0; width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 2px solid var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">` : ''}
                             <h2 style="padding-left: 55px; padding-right: 55px; color: ${borderColor}; font-weight: 900; font-size: 1.1em; text-transform: uppercase; margin-bottom: 5px; text-align: center; line-height: 1.2; text-shadow: 0px 0px 8px rgba(255,255,255,1), 0px 0px 3px rgba(255,255,255,0.9);">${t.nombre} #${t.numero}</h2>
-                            <div class="prize-info" style="padding: 5px; margin: 5px 0; font-size: 0.8em; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap; background: #fff3e0; border-radius: 8px; color: #e65100; font-weight: bold;">
-                                <span>🏆 Premios: <span>${t.premiosQty}</span></span>
-                                <span>💰 Gana: <span>${t.premiosMonto}</span></span>
-                                <span>🎟️ Precio: <span>${t.precioBoleto}</span></span>
-                            </div>
+                            ${prizeInfoHtml}
                             <p style="font-size: 0.8em; color: #444; font-weight: 800; margin-top: 5px;">${t.desc}</p>
                             <p style="font-size: 0.8em; color: #111; margin-top: 2px; font-weight: bold;">En base a: <strong style="color: var(--primary); text-transform: uppercase;">${t.base}</strong></p>
                         </div>
                         
-                        <div style="background: rgba(255,255,255,0.85); padding: 10px; border-radius: 8px; backdrop-filter: blur(5px);">
-                            <p style="text-align:center; font-size:0.8em; color:#004085; font-weight:700; margin-bottom:10px;">👉 Toca un número libre para apartarlo vía WhatsApp</p>
+                        <div style="background: rgba(255,255,255,0.95); padding: 10px; border-radius: 8px;">
+                            <p style="text-align:center; font-size:0.8em; color:#004085; font-weight:700; margin-bottom:10px;">👉 Aparta tu número de la suerte haciendo click para llevarte a Whassapp</p>
                             <div class="grid-container" style="grid-template-columns: ${colStyle}; width: 100%; margin: 0; background: ${borderColor}66; border: 2px solid ${borderColor};">
+
                                 ${gridCellsHtml}
                             </div>
                             <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px; font-size: 0.7em; font-weight: bold; padding-bottom: 5px;">
@@ -1397,14 +1420,16 @@ window.switchUserTab = async (tab) => {
             document.getElementById('user-include-link').checked = p.includeLink || false;
             if(document.getElementById('user-profile-title')) document.getElementById('user-profile-title').value = p.profileTitle || '';
             if(document.getElementById('user-profile-vl-text')) document.getElementById('user-profile-vl-text').value = p.profileVlText || '';
-            if(p.profileVlImg) {
+                        if(p.profileVlImg) {
                 window.currentProfileVlImg = p.profileVlImg;
                 if(document.getElementById('preview-profile-vl-box')) document.getElementById('preview-profile-vl-box').style.display = 'flex';
                 if(document.getElementById('preview-profile-vl')) document.getElementById('preview-profile-vl').src = p.profileVlImg;
             }
             window.loadWinnersGallery();
+            window.loadProbsGallery();
         }
     }
+
 
             if(tab === 'grupos') {
             let locales = JSON.parse(localStorage.getItem('enlacesGrupos')) || [];
@@ -1690,14 +1715,14 @@ window.saveAdminSettings = async () => {
         tris: document.getElementById('admin-logo-tris').files[0]
     };
 
-    for (const [key, file] of Object.entries(files)) {
+       for (const [key, file] of Object.entries(files)) {
         if (file) {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', UPLOAD_PRESET);
             const resp = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
             const json = await resp.json();
-            if (json.secure_url) updates[`settings/logo_${key}`] = json.secure_url;
+            if (json.secure_url) updates[`settings/logo_${key}`] = json.secure_url.replace('/upload/', '/upload/q_auto,f_auto/');
         }
     }
 
@@ -1952,10 +1977,40 @@ window.openGrid = async (templateId, forceUid = null) => {
     const logoTris = settings.logo_tris;
     const renderOficial = document.getElementById('render-logo-oficial');
     
-    if (t.base === "Lotería Nacional" && logoLot) { renderOficial.src = logoLot; renderOficial.style.display = 'block'; }
-        else if ((t.base === "Tris Clásico" || t.base === "Tris Todo el Día") && logoTris) { renderOficial.src = logoTris; renderOficial.style.display = 'block'; }
+        if (t.base === "Lotería Nacional" && logoLot) { renderOficial.src = logoLot; renderOficial.style.display = 'block'; }
+        else if (t.base && t.base.includes("Tris") && logoTris) { renderOficial.src = logoTris; renderOficial.style.display = 'block'; }
 
     else { renderOficial.style.display = 'none'; }
+
+    const prizeInfoDiv = document.querySelector('.prize-info');
+    const customTrisDivId = 'tris-todo-el-dia-prizes';
+    let customTrisDiv = document.getElementById(customTrisDivId);
+    if (t.base === "Tris Todo el Día") {
+        prizeInfoDiv.style.display = 'none';
+        if (!customTrisDiv) {
+            customTrisDiv = document.createElement('div');
+            customTrisDiv.id = customTrisDivId;
+            prizeInfoDiv.parentNode.insertBefore(customTrisDiv, prizeInfoDiv.nextSibling);
+        }
+        const trisLogoSrc = logoTris || 'https://pronosticos.gob.mx/images/logos/tris.png';
+        const monto = t.premiosMonto || '$500';
+                customTrisDiv.innerHTML = `
+            <div style="display: flex; justify-content: space-between; gap: 2px; margin: 5px 0; font-size: 0.6em; font-weight: 900; color: #111;">
+                ${['Mediodía', 'De las tres', 'Extra', 'De las siete', 'Clásico'].map(name => `
+                    <div style="display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.9); padding: 2px 1px; border-radius: 6px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 19%;">
+                        <img src="${trisLogoSrc}" crossorigin="anonymous" style="width: 20px; height: 20px; object-fit: contain; margin-bottom: 1px;">
+                        <span style="color: #004085; font-size: 0.7em; margin-bottom: 1px; text-align: center; line-height: 1;">${name}</span>
+                        <span style="background: #f1c40f; color: #000; padding: 1px 2px; border-radius: 3px; width: 95%; text-align: center; border: 1px solid #d4ac0d; text-shadow: none; font-size: 0.85em;">🥇 ${monto}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        customTrisDiv.style.display = 'block';
+    } else {
+        prizeInfoDiv.style.display = 'flex';
+        if (customTrisDiv) customTrisDiv.style.display = 'none';
+    }
 
                renderGridCells(t.boletos, t.tickets || {}, t.oportunidades, t.tipo);
         
@@ -2070,15 +2125,15 @@ function renderGridCells(total, ticketsData, oportunidades = 1, tipo = 'normal')
         if (oportunidades >= 3) {
             cell.style.minHeight = '45px';
             cell.style.fontSize = '0.65em';
-              } else if (oportunidades === 1) {
-            cell.style.minHeight = '20px';
-            cell.style.fontSize = '0.55em';
+                      } else if (oportunidades === 1) {
+            cell.style.minHeight = '15px';
+            cell.style.fontSize = '0.5em';
+            cell.style.padding = '0px 2px';
         }
                      
         cell.innerHTML = `
-
-            <div style="${oportunidades === 1 ? 'font-weight: 900; font-size: 0.9em; margin-right: 5px;' : ''}">${displayNums}</div>
-            <span class="cell-name ${colorClass}" style="line-height: 1.1;">${nameHTML}</span>
+            <div style="${oportunidades === 1 ? 'font-weight: 900; font-size: 0.9em; margin-right: 3px;' : ''}">${displayNums}</div>
+            <span class="cell-name ${colorClass}" style="line-height: 1.1; margin-top: 1px;">${nameHTML}</span>
         `;
                                               
         cell.onclick = () => openTicketModal(numStr, td);
@@ -2170,10 +2225,10 @@ window.saveTicketData = async () => {
     
         if(!msj.includes(linkBoleto)) msj += `\n\n🎟️ Descarga tu boleto aquí: ${linkBoleto}`;
     
-    const snapUserPro1 = await get(ref(db, `users/${auth.currentUser.uid}`));
+        const snapUserPro1 = await get(ref(db, `users/${auth.currentUser.uid}`));
     if(snapUserPro1.val()?.isPro) {
         let linkPerfil1 = `${window.location.origin}${window.location.pathname}?p=1&u=${auth.currentUser.uid}`;
-        msj += `\n\n🌐 Ve nuestro perfil en nuestro sitio web:\n${linkPerfil1}`;
+        msj += `\n\n🌐 Mira nuestros sorteos activos en tiempo real aquí:\n${linkPerfil1}`;
     }
 
 
@@ -2244,16 +2299,17 @@ window.generateDigitalTicket = async () => {
     const snapSet = await get(ref(db, 'settings'));
     const settings = snapSet.val() || {};
 
-    if (t.base === "Lotería Nacional") { 
+       if (t.base === "Lotería Nacional") { 
         borderColor = "#b71c1c"; 
         if(settings.logo_loteria) {
             logoCabecera = `<img src="${settings.logo_loteria}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
             logoBorde = `<img src="${settings.logo_loteria}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
         }
-        } else if (t.base === "Tris Clásico" || t.base === "Tris Todo el Día") { 
+        } else if (t.base && t.base.includes("Tris")) { 
         borderColor = "#d81b60"; // Rosa Tris Oficial
 
         if(settings.logo_tris) {
+
             logoCabecera = `<img src="${settings.logo_tris}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
             logoBorde = `<img src="${settings.logo_tris}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
         }
@@ -2715,15 +2771,16 @@ window.generarBoletoLibre = async () => {
     const snapSet = await get(ref(db, 'settings'));
     const settings = snapSet.val() || {};
 
-    if (base === "Lotería Nacional") { 
+        if (base === "Lotería Nacional") { 
         borderColor = "#b71c1c"; 
         if(settings.logo_loteria) {
             logoCabecera = `<img src="${settings.logo_loteria}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
             logoBorde = `<img src="${settings.logo_loteria}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
         }
-    } else if (base === "Tris Clásico") { 
+    } else if (base && base.includes("Tris")) { 
         borderColor = "#d81b60"; 
         if(settings.logo_tris) {
+
             logoCabecera = `<img src="${settings.logo_tris}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
             logoBorde = `<img src="${settings.logo_tris}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
         }
@@ -2782,11 +2839,12 @@ window.generarBoletoLibre = async () => {
     let msj = msgTemplate.replace(/\[CLIENTE\]/g, nombre).replace(/\[NUMERO\]/g, numerosStr).replace(/\[SORTEO\]/g, sorteoNombre);
        msj += `\\n\\nCifras: *${cifras}*\\nEstatus: *${estatus.toUpperCase()}*`;
 
-    const snapUserPro2 = await get(ref(db, `users/${auth.currentUser.uid}`));
+        const snapUserPro2 = await get(ref(db, `users/${auth.currentUser.uid}`));
     if(snapUserPro2.val()?.isPro) {
         let linkPerfil2 = `${window.location.origin}${window.location.pathname}?p=1&u=${auth.currentUser.uid}`;
-        msj += `\\n\\n🌐 Ve nuestro perfil en nuestro sitio web:\\n${linkPerfil2}`;
+        msj += `\\n\\n🌐 Mira nuestros sorteos activos en tiempo real aquí:\\n${linkPerfil2}`;
     }
+
 
     btn.innerText = "Generar venta libre"; btn.disabled = false;
     document.getElementById('vl-nombre').value = '';
@@ -2995,15 +3053,16 @@ window.renderizarBoletoDigitalVL = async (key) => {
     const snapSet = await get(ref(db, 'settings'));
     const settings = snapSet.val() || {};
 
-    if (venta.base === "Lotería Nacional") {
+       if (venta.base === "Lotería Nacional") {
         borderColor = "#b71c1c";
         if (settings.logo_loteria) {
             logoCabecera = `<img src="${settings.logo_loteria}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
             logoBorde = `<img src="${settings.logo_loteria}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
         }
-      } else if (base === "Tris Clásico" || base === "Tris Todo el Día") { 
+      } else if (venta.base && venta.base.includes("Tris")) { 
         borderColor = "#d81b60"; 
         if(settings.logo_tris) {
+
 
             logoCabecera = `<img src="${settings.logo_tris}" style="width: 25px; height: 25px; object-fit: contain; margin-left: 8px; background: white; border-radius: 5px; padding: 2px; vertical-align: middle;">`;
             logoBorde = `<img src="${settings.logo_tris}" style="width: 14px; height: 14px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">`;
@@ -3080,21 +3139,23 @@ window.uploadInstant = async (input, previewId) => {
     formData.append('upload_preset', "RifasExpress"); // Usando tu preset configurado
 
     try {
-        const resp = await fetch("https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload", { method: 'POST', body: formData });
+                const resp = await fetch("https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload", { method: 'POST', body: formData });
         const json = await resp.json();
         
         if (json.secure_url) {
-            window.lastUploadedUrls[previewId] = json.secure_url;
+            let urlRapida = json.secure_url.replace('/upload/', '/upload/q_auto,f_auto/');
+            window.lastUploadedUrls[previewId] = urlRapida;
             if(previewImg) {
-                previewImg.src = json.secure_url;
+                previewImg.src = urlRapida;
                 previewImg.style.opacity = '1';
             }
                       // Guardar en el perfil del usuario para persistencia (reutilización futura)
             if(auth.currentUser) {
-                push(ref(db, `users/${auth.currentUser.uid}/galeria`), json.secure_url);
+                push(ref(db, `users/${auth.currentUser.uid}/galeria`), urlRapida);
             }
 
         }
+
     } catch(e) {
         console.error("Error en subida instantánea", e);
         Swal.fire('Error', 'No se pudo subir la imagen a la nube.', 'error');
@@ -3147,13 +3208,15 @@ window.uploadWinner = async (input) => {
     formData.append('upload_preset', "RifasExpress");
     Swal.fire({ title: 'Subiendo a la galería...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
-        const resp = await fetch("https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload", { method: 'POST', body: formData });
+                const resp = await fetch("https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload", { method: 'POST', body: formData });
         const json = await resp.json();
         if(json.secure_url) {
-            await push(ref(db, `users/${auth.currentUser.uid}/ganadores`), json.secure_url);
+            let urlRapida = json.secure_url.replace('/upload/', '/upload/q_auto,f_auto/');
+            await push(ref(db, `users/${auth.currentUser.uid}/ganadores`), urlRapida);
             Swal.fire('¡Subido!', 'Imagen agregada exitosamente al carrusel', 'success');
             window.loadWinnersGallery();
         }
+
     } catch(e) { Swal.fire('Error', 'No se pudo subir la imagen', 'error'); }
 };
 
@@ -3183,14 +3246,16 @@ window.uploadProb = async (input) => {
     formData.append('upload_preset', "RifasExpress");
     Swal.fire({ title: 'Subiendo probabilidad...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
-        const resp = await fetch("https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload", { method: 'POST', body: formData });
+                const resp = await fetch("https://api.cloudinary.com/v1_1/duxcsjc4z/image/upload", { method: 'POST', body: formData });
         const json = await resp.json();
                if(json.secure_url) {
-            await push(ref(db, `users/${auth.currentUser.uid}/probabilidades`), { url: json.secure_url, fecha: new Date().toLocaleDateString('es-MX') });
+            let urlRapida = json.secure_url.replace('/upload/', '/upload/q_auto,f_auto/');
+            await push(ref(db, `users/${auth.currentUser.uid}/probabilidades`), { url: urlRapida, fecha: new Date().toLocaleDateString('es-MX') });
             Swal.fire('¡Subido!', 'Probabilidad agregada al carrusel', 'success');
 
             window.loadProbsGallery();
         }
+
     } catch(e) { Swal.fire('Error', 'No se pudo subir la imagen', 'error'); }
 };
 
